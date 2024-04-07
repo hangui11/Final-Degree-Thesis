@@ -140,7 +140,7 @@ def user_based_recommender(target_user_idx, matrix):
 if __name__ == "__main__":
     
     # Load the dataset
-    path_to_ml_latest_small = './ml-latest-small/'
+    path_to_ml_latest_small = '../ml-latest-small/'
     dataset = ut.load_dataset_from_source(path_to_ml_latest_small)
 
     # Ratings data
