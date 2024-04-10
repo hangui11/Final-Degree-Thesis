@@ -1,10 +1,9 @@
-import pandas as pd
+import sys
+sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
+from utils import *
 import numpy as np
-
-import naive_recommender as nav
-import utils as ut
-
 import time
+
 
 def calculateRatingsMean(matrix):
     ratingsMean = {}
@@ -115,11 +114,11 @@ if __name__ == "__main__":
     
     # Load the dataset
     path_to_ml_latest_small = './ml-latest-small/'
-    dataset = ut.load_dataset_from_source(path_to_ml_latest_small)
+    dataset = load_dataset_from_source(path_to_ml_latest_small)
 
     # Ratings data
     val_movies = 5
-    ratings_train, ratings_val = ut.split_users(dataset["ratings.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
     
     # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
@@ -130,7 +129,7 @@ if __name__ == "__main__":
     m = generate_items_matrix(movies_idx, ratings_train)
     
     # item-to-item similarity
-    target_user_idx = 430
+    target_user_idx = 1
     print('The prediction for user ' + str(target_user_idx) + ':')
 
     recommendations = item_based_recommender(target_user_idx, m)
@@ -142,13 +141,13 @@ if __name__ == "__main__":
         print (" Recomendation: Movie:{} (Genre: {})".format(rec_movie["title"].values[0], rec_movie["genres"].values[0]))
 
     # Validation
-    matrixmpa_genres, validationMoviesGenres = ut.validationMoviesGenres(dataset["movies.csv"], ratings_val, target_user_idx)
+    matrixmpa_genres, validationMoviesGenres = validationMoviesGenres(dataset["movies.csv"], ratings_val, target_user_idx)
     
     ## item based recommender
     topMoviesUser = list(list(zip(*recommendations[:5]))[0])
     recommendsMoviesItem = matrixmpa_genres.loc[topMoviesUser]
     # sim entre matriu genere amb recomanador item
-    sim = ut.cosinuSimilarity(validationMoviesGenres, recommendsMoviesItem)
+    sim = cosinuSimilarity(validationMoviesGenres, recommendsMoviesItem)
     print(' Similarity with item-to-item recommender: ' + str(sim))
 
     end = time.time()

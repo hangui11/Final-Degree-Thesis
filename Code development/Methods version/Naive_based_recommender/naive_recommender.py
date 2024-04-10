@@ -1,6 +1,8 @@
 import pandas as pd 
-import utils as ut
 import time 
+import sys
+sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
+from utils import *
 
 def naive_recommender(ratings: object, movies:object, k: int = 5) -> list: 
     # Provide the code for the naive recommender here. This function should return 
@@ -18,11 +20,11 @@ if __name__ == "__main__":
     
      # Load the dataset
     path_to_ml_latest_small = './ml-latest-small/'
-    dataset = ut.load_dataset_from_source(path_to_ml_latest_small)
+    dataset = load_dataset_from_source(path_to_ml_latest_small)
 
     # Ratings data
     val_movies = 5
-    ratings_train, ratings_val = ut.split_users(dataset["ratings.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
     
     # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
@@ -41,12 +43,12 @@ if __name__ == "__main__":
         print (" Recomendation: Movie:{} (Genre: {})".format(rec_movie["title"].values[0], rec_movie["genres"].values[0]))
     
      # Validation
-    matrixmpa_genres, validationMoviesGenres = ut.validationMoviesGenres(dataset["movies.csv"], ratings_val, target_user_idx)
+    matrixmpa_genres, validationMoviesGenres = validationMoviesGenres(dataset["movies.csv"], ratings_val, target_user_idx)
     
     recommendsMoviesNaive = matrixmpa_genres.loc[topMovieNaive]
     
     # sim entre matriu genere amb recomanador sistema
-    sim = ut.cosinuSimilarity(validationMoviesGenres, recommendsMoviesNaive)
+    sim = cosinuSimilarity(validationMoviesGenres, recommendsMoviesNaive)
     print(' Similarity with naive recommender: ' + str(sim))
     
     end = time.time()

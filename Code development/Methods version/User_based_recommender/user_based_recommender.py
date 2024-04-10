@@ -1,9 +1,10 @@
+import sys
+sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
+from utils import *
 import pandas as pd
 import numpy as np
 import time
 
-import naive_recommender as nav
-import utils as ut
 
 def calculateRatingsMean(matrix):
     ratingsMean = {}
@@ -140,12 +141,12 @@ def user_based_recommender(target_user_idx, matrix):
 if __name__ == "__main__":
     
     # Load the dataset
-    path_to_ml_latest_small = '../ml-latest-small/'
-    dataset = ut.load_dataset_from_source(path_to_ml_latest_small)
+    path_to_ml_latest_small = './ml-latest-small/'
+    dataset = load_dataset_from_source(path_to_ml_latest_small)
 
     # Ratings data
     val_movies = 5
-    ratings_train, ratings_val = ut.split_users(dataset["ratings.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
     
     # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
@@ -157,7 +158,7 @@ if __name__ == "__main__":
     
     # user-to-user similarity
     # 387, 109
-    target_user_idx = 430
+    target_user_idx = 1
     print('The prediction for user ' + str(target_user_idx) + ':')
 
     recommendations = user_based_recommender(target_user_idx, m)
@@ -168,14 +169,14 @@ if __name__ == "__main__":
         print (" Recomendation: Movie:{} (Genre: {})".format(rec_movie["title"].values[0], rec_movie["genres"].values[0]))
 
     # Validation
-    matrixmpa_genres, validationMoviesGenres = ut.validationMoviesGenres(dataset["movies.csv"], ratings_val, target_user_idx)
+    matrixmpa_genres, validationMoviesGenres = validationMoviesGenres(dataset["movies.csv"], ratings_val, target_user_idx)
 
     # user based recommender
     topMoviesUser = list(list(zip(*recommendations[:5]))[0])
     recommendsMoviesUser = matrixmpa_genres.loc[topMoviesUser]
     
     # sim entre matriu genere amb recomanador user
-    sim = ut.cosinuSimilarity(validationMoviesGenres, recommendsMoviesUser)
+    sim = cosinuSimilarity(validationMoviesGenres, recommendsMoviesUser)
     print(' Similarity with user-to-user recommender: ' + str(sim))
 
     end = time.time()
