@@ -1,4 +1,5 @@
 # Final Degree Thesis
-STATE OF THE ART OF RECOMMENDER SYSTEMS
+<em>STATE OF THE ART OF RECOMMENDER SYSTEMS</em>
 
-In this session, you could see the differents between the recommender systems algorithms implemented with the traditional methods or using Machine Learning/Deep Learning to improve the accuracy and performance.
+In this project, you could see the differents between the recommender systems algorithms implemented with the traditional methods or using Machine Learning/Deep Learning to improve the accuracy and performance.
+
