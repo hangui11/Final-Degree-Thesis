@@ -21,21 +21,25 @@ if __name__ == "__main__":
 
     start = time.time()
     print("Start the prediction of item-to-item based recommender ...")
+
     itemRecommender = item.ItemToItem(ratings_train, movies, users_idy)
     itemSim = []
     countSim = 0
+
     for userId in users_idy:
+        itemRecommender.item_based_recommender(userId)
         sim = itemRecommender.validation(ratings_val, userId)
         countSim += sim
-
-        itemRecommender.item_based_recommender(userId)
         itemSim.append((userId, sim))
 
     itemDF = pd.DataFrame(itemSim, columns=['userId', 'itemSim'])
-    itemDF.to_csv('itemSim.csv', index=False)
+    path = path = 'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Item_experimentation\itemSim.csv'
+    itemDF.to_csv(path, index=False)
     
-    countSimMean = countSim / len(users_idy)
+    countSimAverage = countSim / len(users_idy)
 
     end = time.time()
-    print("The prediction has a ")
+
+    print("End the prediction of item based recommender")
+    print("The prediction has an average similarity of: " + str(countSimAverage))
     print("The execution time: " + str(end-start) + " seconds")

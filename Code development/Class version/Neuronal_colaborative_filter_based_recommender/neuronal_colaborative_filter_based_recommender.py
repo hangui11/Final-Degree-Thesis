@@ -7,10 +7,10 @@ import time
 import torch.nn as nn
 import torch.optim as optim
 # 243 933 42 
-number = 933
-print(number)
-torch.manual_seed(number)
-np.random.seed(number)
+# number = 933
+# print(number)
+# torch.manual_seed(number)
+# np.random.seed(number)
 
 class NeuronalColaborativeFilter(nn.Module):
 

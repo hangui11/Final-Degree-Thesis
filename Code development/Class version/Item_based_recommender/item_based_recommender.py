@@ -135,7 +135,7 @@ class ItemToItem():
         
         # sim entre matriu genere amb recomanador user
         sim = cosinuSimilarity(validationMoviesGenress, recommendsMoviesUser)
-        print(' Similarity with item-to-item recommender for user: '+ str(target_user_idx) + ' is ' + str(sim))
+        # print(' Similarity with item-to-item recommender for user: '+ str(target_user_idx) + ' is ' + str(sim))
         return sim
 
 if __name__ == "__main__":
