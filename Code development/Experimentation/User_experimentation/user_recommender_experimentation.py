@@ -2,7 +2,7 @@ import sys
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
 from utils import *
-from User_based_recommender import user_based_recommender as user
+from User_based_recommender import user_based_recommender as user # type: ignore
 import time 
 
 if __name__ == "__main__":
@@ -31,9 +31,10 @@ if __name__ == "__main__":
         sim = userRecommender.validation(ratings_val, userId)
         countSim += sim
         userSim.append((userId, sim))
+        print(' Similarity with user-to-user recommender for user: '+ str(userId) + ' is ' + str(sim))
         
     userDF = pd.DataFrame(userSim, columns=['userId', 'userSim'])
-    path = 'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\User_experimentation\userSim.csv'
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\User_experimentation\userSim.csv'
     userDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

@@ -2,9 +2,9 @@ import sys
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
 from utils import *
-from User_based_recommender import user_based_recommender as user
-from Item_based_recommender import item_based_recommender as item
-from kNN_hybrid_based_recommender import kNN_based_recommender as knn
+from User_based_recommender import user_based_recommender as user # type: ignore
+from Item_based_recommender import item_based_recommender as item # type: ignore
+from kNN_hybrid_based_recommender import kNN_based_recommender as knn # type: ignore
 import time 
 
 if __name__ == "__main__":
@@ -41,15 +41,16 @@ if __name__ == "__main__":
         sim = knnRecommender.validation(ratings_val, userId)
         countSim += sim
         knnSim.append((userId, sim))
+        print(' Similarity with kNN hybrid recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     knnDF = pd.DataFrame(knnSim, columns=['userId', 'knnSim'])
-    path = 'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\kNN_hybrid_experimentation\knnSim.csv'
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\kNN_hybrid_experimentation\knnSim.csv'
     knnDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)
 
     end = time.time()
 
-    print("End the prediction of item based recommender")
+    print("End the prediction of kNN hybrid based recommender")
     print("The prediction has an average similarity of: " + str(countSimAverage))
     print("The execution time: " + str(end-start) + " seconds")

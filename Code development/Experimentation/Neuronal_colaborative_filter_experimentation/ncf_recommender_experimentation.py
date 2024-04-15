@@ -2,7 +2,7 @@ import sys
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
 from utils import *
-from Neuronal_colaborative_filter_based_recommender import neuronal_colaborative_filter_based_recommender as ncf
+from Neuronal_colaborative_filter_based_recommender import neuronal_colaborative_filter_based_recommender as ncf # type: ignore
 import time 
 import torch
 import numpy as np
@@ -24,38 +24,34 @@ if __name__ == "__main__":
     start = time.time()
     print("Start the prediction of neuronal colaborative filter based recommender ...")
 
-    # mfRecommender = mf.MatrixFactorization(ratings_train, movies, users_idy)
-    # mfRecommender.matrix_factorization()
-    # end = time.time()
-    # print('MF MODEL Computation time: ' + str(end-start))
+    seed = 243
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    ncfRecommender = ncf.NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, movies)
+    ncfRecommender.trainingModel(lr=1e-3, wd=1e-4, max_epochs = 500, batch_size = 1024,  early_stop_epoch_threshold = 3, ratings_train=ratings_train)
+    
+    end = time.time()
+    print('NCF MODEL Computation time: ' + str(end-start))
 
     ncfSim = []
-    # countSim = 0
-    seeds = [42,243,933,235433,12346807,753,2568]
+    countSim = 0
 
-    for seed in seeds:
-        torch.manual_seed(seed)
-        np.random.seed(seed)
-        ncfRecommender = ncf.NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, movies)
-        ncfRecommender.trainingModel(lr=1e-3, wd=1e-4, max_epochs = 500, batch_size = 1024,  early_stop_epoch_threshold = 3, ratings_train=ratings_train)
-        countSim = 0
+    for userId in users_idy:
+        ncfRecommender.predictUnseenMoviesRating(userId)
+        sim = ncfRecommender.validation(ratings_val, userId)
+        countSim += sim
+        ncfSim.append((userId, sim))
+        print(' Similarity with neuronal colaborative filter recommender for user: '+ str(userId) + ' is ' + str(sim))
 
-        for userId in users_idy:
-            ncfRecommender.predictUnseenMoviesRating(userId)
-            sim = ncfRecommender.validation(ratings_val, userId)
-            countSim += sim
-            # ncfSim.append((userId, sim))
-
-        # ncfDF = pd.DataFrame(ncfSim, columns=['userId', 'ncfSim'])
-        # path = 'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Neuronal_colaborative_filter_experimentation\ncfSim.csv'
-        # ncfDF.to_csv(path, index=False)
+    ncfDF = pd.DataFrame(ncfSim, columns=['userId', 'ncfSim'])
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Neuronal_colaborative_filter_experimentation\ncfSim.csv'
+    ncfDF.to_csv(path, index=False)
         
-        countSimAverage = countSim / len(users_idy)
+    countSimAverage = countSim / len(users_idy)
 
-        end = time.time()
+    end = time.time()
         
-        print("End the prediction of neuronal colaborative filter based recommender")
-        print("The prediction with seed " + str(seed) + " has an average similarity of: " + str(countSimAverage))
-
+    print("End the prediction of neuronal colaborative filter based recommender")
+    print("The prediction has an average similarity of: " + str(countSimAverage))
 
     print("The execution time: " + str(end-start) + " seconds")

@@ -2,7 +2,7 @@ import sys
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
 from utils import *
-from Matrix_factorization_based_recommender import matrix_factorization_based_recommender as mf
+from Matrix_factorization_based_recommender import matrix_factorization_based_recommender as mf # type: ignore
 import time 
 import numpy as np
 
@@ -23,36 +23,33 @@ if __name__ == "__main__":
     start = time.time()
     print("Start the prediction of matrix factorization based recommender ...")
 
-    # mfRecommender = mf.MatrixFactorization(ratings_train, movies, users_idy)
-    # mfRecommender.matrix_factorization()
-    # end = time.time()
-    # print('MF MODEL Computation time: ' + str(end-start))
+    seed = 9101307
+    np.random.seed(seed)
+    
+    mfRecommender = mf.MatrixFactorization(ratings_train, movies, users_idy)
+    mfRecommender.matrix_factorization()
+    end = time.time()
+    print('MF MODEL Computation time: ' + str(end-start))
 
     mfSim = []
-    # countSim = 0
-    seeds = [42]
+    countSim = 0
+    
+    for userId in users_idy:
+        mfRecommender.getRecommendations(userId)
+        sim = mfRecommender.validation(ratings_val, userId)
+        countSim += sim
+        mfSim.append((userId, sim))
+        print(' Similarity with matrix factorization recommender for user: '+ str(userId) + ' is ' + str(sim))
 
-    for seed in seeds:
-        np.random.seed(seed)
-        mfRecommender = mf.MatrixFactorization(ratings_train, movies, users_idy)
-        mfRecommender.matrix_factorization()
-        countSim = 0
-        for userId in users_idy:
-            mfRecommender.getRecommendations(userId)
-            sim = mfRecommender.validation(ratings_val, userId)
-            countSim += sim
-            # mfSim.append((userId, sim))
-
-        # mfDF = pd.DataFrame(mfSim, columns=['userId', 'mfSim'])
-        # path = 'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Matrix_factorization_experimentation\mfSim.csv'
-        # mfDF.to_csv(path, index=False)
+    mfDF = pd.DataFrame(mfSim, columns=['userId', 'mfSim'])
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Matrix_factorization_experimentation\mfSim.csv'
+    mfDF.to_csv(path, index=False)
         
-        countSimAverage = countSim / len(users_idy)
+    countSimAverage = countSim / len(users_idy)
 
-        end = time.time()
+    end = time.time()
         
-        print("End the prediction of matrix factorization based recommender")
-        print("The prediction with seed " + str(seed) + " has an average similarity of: " + str(countSimAverage))
-
+    print("End the prediction of matrix factorization based recommender")
+    print("The prediction has an average similarity of: " + str(countSimAverage))
 
     print("The execution time: " + str(end-start) + " seconds")

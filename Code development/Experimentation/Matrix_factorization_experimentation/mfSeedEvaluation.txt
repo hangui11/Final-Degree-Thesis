@@ -1,0 +1,145 @@
+Start the prediction of matrix factorization based recommender ...
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2112
+End the prediction of matrix factorization based recommender
+The prediction with seed 60054000 has an average similarity of: 0.6298379181778287
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2379
+End the prediction of matrix factorization based recommender
+The prediction with seed 42 has an average similarity of: 0.6340295128810762
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 1960
+End the prediction of matrix factorization based recommender
+The prediction with seed 243 has an average similarity of: 0.6315979896767924
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2255
+End the prediction of matrix factorization based recommender
+The prediction with seed 1119 has an average similarity of: 0.631309912528187
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2644
+End the prediction of matrix factorization based recommender
+The prediction with seed 1254392 has an average similarity of: 0.6347289740183167
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 1906
+End the prediction of matrix factorization based recommender
+The prediction with seed 3659265380 has an average similarity of: 0.6338375007746053
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2477
+End the prediction of matrix factorization based recommender
+The prediction with seed 2186473283 has an average similarity of: 0.6334165460675333
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2424
+End the prediction of matrix factorization based recommender
+The prediction with seed 172583022 has an average similarity of: 0.6340761918845519
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2070
+End the prediction of matrix factorization based recommender
+The prediction with seed 404699780 has an average similarity of: 0.629587803522656
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 1938
+End the prediction of matrix factorization based recommender
+The prediction with seed 770913450 has an average similarity of: 0.631019852501042
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2404
+End the prediction of matrix factorization based recommender
+The prediction with seed 6934690 has an average similarity of: 0.6256274162699886
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2025
+End the prediction of matrix factorization based recommender
+The prediction with seed 11680057 has an average similarity of: 0.6306721543681977
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2010
+End the prediction of matrix factorization based recommender
+The prediction with seed 5476520 has an average similarity of: 0.6328104002087747
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2017
+End the prediction of matrix factorization based recommender
+The prediction with seed 9101307 has an average similarity of: 0.6328932492004434
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 2367
+End the prediction of matrix factorization based recommender
+The prediction with seed 8657548 has an average similarity of: 0.6339003874417363
+
+The execution time: 21490.4797506 seconds
+-----------------------------------------------------------------------------------------
+Start the prediction of matrix factorization based recommender ...
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 60054000 has an average similarity of: 0.6360484403670525
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 42 has an average similarity of: 0.6377382468738263
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 243 has an average similarity of: 0.6438519491612603
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 1119 has an average similarity of: 0.6413464110686913
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 1254392 has an average similarity of: 0.636765583676536
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 3659265380 has an average similarity of: 0.6374373987157882
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 2186473283 has an average similarity of: 0.6253572655877035
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 4649
+End the prediction of matrix factorization based recommender
+The prediction with seed 172583022 has an average similarity of: 0.6311386261134205
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 404699780 has an average similarity of: 0.6409790943515506
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 4439
+End the prediction of matrix factorization based recommender
+The prediction with seed 770913450 has an average similarity of: 0.6150447099299322
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 6934690 has an average similarity of: 0.6334672807028668
+
+Start the MF MODEL computation .....
+The loss respect previous loss is small than 0.0001 at the iteration: 4939
+End the prediction of matrix factorization based recommender
+The prediction with seed 11680057 has an average similarity of: 0.6228725866292069
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 5476520 has an average similarity of: 0.6289934190172131
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 9101307 has an average similarity of: 0.644528824892748
+
+Start the MF MODEL computation .....
+End the prediction of matrix factorization based recommender
+The prediction with seed 8657548 has an average similarity of: 0.64074158362787
+
+The execution time: 41118.56892609596 seconds

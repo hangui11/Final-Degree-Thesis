@@ -2,7 +2,7 @@ import sys
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
 from utils import *
-from Naive_based_recommender import naive_recommender as nav
+from Naive_based_recommender import naive_recommender as nav # type: ignore
 import time 
 
 if __name__ == "__main__":
@@ -33,8 +33,10 @@ if __name__ == "__main__":
         
         navSim.append((userId, sim))
 
+        print(' Similarity with naive recommender for user: '+ str(userId) + ' is ' + str(sim))
+
     naiveDF = pd.DataFrame(navSim, columns=['userId', 'navSim'])
-    path = 'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Naive_experimentation\navSim.csv'
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Naive_experimentation\navSim.csv'
     naiveDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

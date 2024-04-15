@@ -230,7 +230,7 @@ class NeuronalColaborativeFilter(nn.Module):
         
         # sim entre matriu genere amb recomanador user
         sim = cosinuSimilarity(validationMoviesGenress, recommendsMoviesUser)
-        print(' Similarity with neuronal colaborative filter recommender: ' + str(sim))
+        # print(' Similarity with neuronal colaborative filter recommender: ' + str(sim))
         return sim
 
 if __name__ == "__main__":

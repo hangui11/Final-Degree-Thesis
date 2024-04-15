@@ -2,7 +2,7 @@ import sys
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
 sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
 from utils import *
-from Item_based_recommender import item_based_recommender as item
+from Item_based_recommender import item_based_recommender as item # type: ignore
 import time 
 
 if __name__ == "__main__":
@@ -31,9 +31,10 @@ if __name__ == "__main__":
         sim = itemRecommender.validation(ratings_val, userId)
         countSim += sim
         itemSim.append((userId, sim))
+        print(' Similarity with item-to-item recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     itemDF = pd.DataFrame(itemSim, columns=['userId', 'itemSim'])
-    path = path = 'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Item_experimentation\itemSim.csv'
+    path = path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Item_experimentation\itemSim.csv'
     itemDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

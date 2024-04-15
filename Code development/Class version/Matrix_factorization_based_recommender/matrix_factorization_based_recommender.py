@@ -34,9 +34,9 @@ no vistos y que es menos propenso al sobreajuste.
 Regularization Term= β/2 ∑k=1 (P[i][k]^2 + Q[k][j]^2)
 
 '''
-number = 42
-print(number)
-np.random.seed(number)
+# number = 42
+# print(number)
+# np.random.seed(number)
 
 class MatrixFactorization:
     def __init__(self, ratings_train, movies, users_idy, k=5, featureSize=8) -> None:
@@ -77,7 +77,7 @@ class MatrixFactorization:
         self.matrix = np.array(m)
         return self.matrix
 
-    def matrix_factorization(self, iterations=10000, alpha=0.0001, beta=0.1, momentum=0.9):
+    def matrix_factorization(self, iterations=10000, alpha=0.0002, beta=0.2, momentum=0.9):
         self.matrix = self.generate_users_items_matrix()
         R = self.matrix
 
@@ -85,8 +85,13 @@ class MatrixFactorization:
         row, column = R.shape
         # Generate user feature and item feature
         K = self.featureSize
-        P = np.random.rand(row, K)
-        Q = np.random.rand(K, column)
+        
+        # P = np.random.rand(row, K)
+        # Q = np.random.rand(K, column)
+
+        # Mean of 3 and Desviation of 2 
+        P = np.random.normal(3, 2, size=(row, K))
+        Q = np.random.normal(3, 2, size=(K, column))
         
         # Igual que la matriz P inicializado con todos los valores a 0
         velocity_P = np.zeros_like(P)
@@ -167,7 +172,7 @@ class MatrixFactorization:
         
         # sim entre matriu genere amb recomanador user
         sim = cosinuSimilarity(validationMoviesGenress, recommendsMoviesUser)
-        print(' Similarity with matrix factorization recommender: ' + str(sim))
+        # print(' Similarity with matrix factorization recommender: ' + str(sim))
         return sim
 
 if __name__ == "__main__":
