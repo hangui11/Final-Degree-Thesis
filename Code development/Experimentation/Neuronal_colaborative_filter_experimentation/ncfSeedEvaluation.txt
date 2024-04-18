@@ -1,97 +1,93 @@
 Start the prediction of neuronal colaborative filter based recommender ...
 
 Start the NCF MODEL training .....
-Early stopping at epoch 81 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 114 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 243 has an average similarity of: 0.5664339828857725
+The prediction with seed 243 has an average similarity of: 0.5608165728505695
 
 Start the NCF MODEL training .....
-Early stopping at epoch 51 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 78 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 42 has an average similarity of: 0.5618935388758503
+The prediction with seed 42 has an average similarity of: 0.5252307997229859
 
 Start the NCF MODEL training .....
-Early stopping at epoch 113 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 86 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 123 has an average similarity of: 0.5522877912275628
+The prediction with seed 123 has an average similarity of: 0.5231222345854601
 
 Start the NCF MODEL training .....
-Early stopping at epoch 75 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 109 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 601 has an average similarity of: 0.5542686836946229
+The prediction with seed 601 has an average similarity of: 0.5558960798473895
 
 Start the NCF MODEL training .....
-Early stopping at epoch 102 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 98 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 933 has an average similarity of: 0.558899913660442
+The prediction with seed 933 has an average similarity of: 0.5454691379166815
 
 Start the NCF MODEL training .....
-Early stopping at epoch 79 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 130 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 235433 has an average similarity of: 0.5499206066389016
+The prediction with seed 235433 has an average similarity of: 0.511381496075731
 
 Start the NCF MODEL training .....
-Early stopping at epoch 105 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 112 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 12346807 has an average similarity of: 0.5593772974703902
+The prediction with seed 12346807 has an average similarity of: 0.5480938923945375
 
 Start the NCF MODEL training .....
-Early stopping at epoch 117 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 124 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 753 has an average similarity of: 0.5464371012762271
+The prediction with seed 753 has an average similarity of: 0.5353433288923265
 
 Start the NCF MODEL training .....
-Early stopping at epoch 74 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 119 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 2568 has an average similarity of: 0.542252215588802
+The prediction with seed 3659265380 has an average similarity of: 0.5528285048636729
 
 Start the NCF MODEL training .....
-Early stopping at epoch 108 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 110 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 3659265380 has an average similarity of: 0.5517056893553157
-
-Start the NCF MODEL training .....
-Early stopping at epoch 88 due to no reduction in loss for 3 epochs.
-End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 2186473283 has an average similarity of: 0.5590944606701242
-
-Start the NCF MODEL training .....
-Early stopping at epoch 59 due to no reduction in loss for 3 epochs.
-End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 172583022 has an average similarity of: 0.5565221240536079
+The prediction with seed 2186473283 has an average similarity of: 0.539145705452997
 
 Start the NCF MODEL training .....
 Early stopping at epoch 100 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 404699780 has an average similarity of: 0.5476337538641801
+The prediction with seed 172583022 has an average similarity of: 0.5407756953001099
 
 Start the NCF MODEL training .....
-Early stopping at epoch 101 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 78 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 770913450 has an average similarity of: 0.5629244971751969
+The prediction with seed 404699780 has an average similarity of: 0.5380463819556536
 
 Start the NCF MODEL training .....
-Early stopping at epoch 72 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 92 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 6934690 has an average similarity of: 0.5549653383410146
+The prediction with seed 770913450 has an average similarity of: 0.52417300987804
 
 Start the NCF MODEL training .....
-Early stopping at epoch 88 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 138 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 11680057 has an average similarity of: 0.5496103414361815
+The prediction with seed 6934690 has an average similarity of: 0.5593100772979073
 
 Start the NCF MODEL training .....
 Early stopping at epoch 95 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 5476520 has an average similarity of: 0.5651413466732851
+The prediction with seed 11680057 has an average similarity of: 0.5377267166273042
 
 Start the NCF MODEL training .....
+Early stopping at epoch 86 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 9101307 has an average similarity of: 0.539277483056044
+The prediction with seed 5476520 has an average similarity of: 0.5250942785806979
 
 Start the NCF MODEL training .....
-Early stopping at epoch 89 due to no reduction in loss for 3 epochs.
+Early stopping at epoch 111 due to no reduction in loss for 3 epochs.
 End the prediction of neuronal colaborative filter based recommender
-The prediction with seed 8657548 has an average similarity of: 0.5663826427832936
+The prediction with seed 9101307 has an average similarity of: 0.5339475349194391
 
-The execution time: 160809.91919443607 seconds
+Start the NCF MODEL training .....
+Early stopping at epoch 123 due to no reduction in loss for 3 epochs.
+End the prediction of neuronal colaborative filter based recommender
+The prediction with seed 8657548 has an average similarity of: 0.5395716857388174
+
+The execution time: 128268.096679925919 seconds

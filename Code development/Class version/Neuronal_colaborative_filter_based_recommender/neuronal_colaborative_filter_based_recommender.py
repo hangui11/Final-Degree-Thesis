@@ -14,7 +14,7 @@ import torch.optim as optim
 
 class NeuronalColaborativeFilter(nn.Module):
 
-    def __init__(self, user_count, item_count, ratings_train, movies, embedding_size=64, hidden_layers=(128,64,32,16), dropout_rate=0.1, output_range=(1,5), k=5):
+    def __init__(self, user_count, item_count, ratings_train, movies, embedding_size=64, hidden_layers=(128,64,32,16), dropout_rate=None, output_range=(1,5), k=5):
         super().__init__()
 
         self.ratings = ratings_train
@@ -98,7 +98,7 @@ class NeuronalColaborativeFilter(nn.Module):
     def forward(self, user_id, item_id):
         ## Access the features of user_id and item_id
         user_features = self.user_embedding(user_id % self.user_hash_size)
-        item_features = self.item_embedding(item_id % self.user_hash_size)
+        item_features = self.item_embedding(item_id % self.item_hash_size)
 
         ## Concat the features of user and item in one feature representation
         x = torch.cat([user_features, item_features], dim=1)
