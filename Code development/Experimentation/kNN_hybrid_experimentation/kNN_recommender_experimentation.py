@@ -44,7 +44,7 @@ if __name__ == "__main__":
         print(' Similarity with kNN hybrid recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     knnDF = pd.DataFrame(knnSim, columns=['userId', 'knnSim'])
-    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\kNN_hybrid_experimentation\knnSim.csv'
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\kNN_hybrid_experimentation\knnSim1.csv'
     knnDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

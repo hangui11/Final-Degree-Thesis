@@ -35,7 +35,7 @@ class UserToUser:
             m[i] = rate
         return m 
     
-    def personSimilarity(self, userA, userB, meanUserA, meanUserB):
+    def pearsonSimilarity(self, userA, userB, meanUserA, meanUserB):
         ## using dict
         ratingsA = {itemId: rating-meanUserA for itemId, rating in userA}
         ratingsB = {itemId: rating-meanUserB for itemId, rating in userB}
@@ -99,7 +99,7 @@ class UserToUser:
         for userId, userMovies in matrix.items():
             if userId != target_user_idx:
                 userMoviesList = list(userMovies.items())
-                sim = self.personSimilarity(targetUserList, userMoviesList, usersRatingsMean[target_user_idx], usersRatingsMean[userId])
+                sim = self.pearsonSimilarity(targetUserList, userMoviesList, usersRatingsMean[target_user_idx], usersRatingsMean[userId])
                 if simMax < sim: simMax = sim
                 if simMin > sim: simMin = sim
                 similarity[userId] = sim
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     start = time.time()
 
     # 387, 109
-    target_user_idx = 1
+    target_user_idx = 392
     print('The prediction for user ' + str(target_user_idx) + ':')
 
     userToUser = UserToUser(ratings_train, dataset['movies.csv'], users_idy)

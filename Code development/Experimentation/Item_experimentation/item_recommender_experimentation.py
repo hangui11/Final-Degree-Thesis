@@ -34,7 +34,7 @@ if __name__ == "__main__":
         print(' Similarity with item-to-item recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     itemDF = pd.DataFrame(itemSim, columns=['userId', 'itemSim'])
-    path = path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Item_experimentation\itemSim.csv'
+    path = path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Item_experimentation\itemSim1.csv'
     itemDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

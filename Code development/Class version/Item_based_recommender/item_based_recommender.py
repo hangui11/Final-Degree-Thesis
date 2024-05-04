@@ -19,7 +19,7 @@ class ItemToItem():
             ratingsMean[k] = sum(v.values())/len(v)
         return ratingsMean
 
-    def personSimilarity(self, itemA, itemB, meanItemA, meanItemB):
+    def pearsonSimilarity(self, itemA, itemB, meanItemA, meanItemB):
         ratingsA = {userId: rating-meanItemA for userId, rating in itemA}
         ratingsB = {userId: rating-meanItemB for userId, rating in itemB}
         
@@ -91,7 +91,7 @@ class ItemToItem():
             # Trobar les similaritats de les pel·lícules vistes amb la pel·lícula no vista
             for kSeenMovies, vSeenMovies in seenMovies.items():
                 usersListB = list(vSeenMovies.items())
-                sim = self.personSimilarity(usersListA, usersListB, moviesRatingMean[kUnseenMovies], moviesRatingMean[kSeenMovies])
+                sim = self.pearsonSimilarity(usersListA, usersListB, moviesRatingMean[kUnseenMovies], moviesRatingMean[kSeenMovies])
                 if simMax < sim: simMax = sim
                 if simMin > sim: simMin = sim
                 similarity[kSeenMovies] = sim
@@ -105,7 +105,7 @@ class ItemToItem():
                     sumRateSim += similarity[kSimilarity]*userRate[kSimilarity]
                     similitude += similarity[kSimilarity]
             
-            # Predictir el rating de la pel·lícula no vista
+            # Predir el rating de la pel·lícula no vista
             if sumRateSim == 0: predictRateUnseenMovies[kUnseenMovies] = 0
             else: predictRateUnseenMovies[kUnseenMovies] = sumRateSim/similitude
             recommendations.append((kUnseenMovies, predictRateUnseenMovies[kUnseenMovies]))

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import sklearn.model_selection 
 
 def load_dataset_from_source(path_to_ml_latest_small: str) -> dict: 
     """
@@ -54,7 +55,9 @@ def split_users(ratings: object , k: int = 5) -> tuple:
         rating_validation.append(ratings_users.iloc[:k]) # First top k rows
         ratings_train.append(ratings_users.iloc[k:]) # Remaining M-k rows
         
-    return pd.concat(ratings_train), pd.concat(rating_validation)
+    train, val = sklearn.model_selection.train_test_split(ratings, test_size= 0.2, random_state=42)
+    # return pd.concat(ratings_train), pd.concat(rating_validation)
+    return train, val
 
 
 def matrix_genres(movies: object) -> dict: 
@@ -119,6 +122,8 @@ def cosinuSimilarity(validationMoviesGenres, recommendsMoviesGenres):
     while (j < len(genres2)):
         d2 += genres2[j][1]*genres2[j][1]
         j += 1
+        
+    if (np.sqrt(d1)*np.sqrt(d2) == 0): return 0
     return sum/(np.sqrt(d1)*np.sqrt(d2))
 
 

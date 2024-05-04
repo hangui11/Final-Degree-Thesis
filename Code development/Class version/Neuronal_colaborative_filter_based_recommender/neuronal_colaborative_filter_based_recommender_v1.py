@@ -6,55 +6,19 @@ import numpy as np
 import time
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.metrics import mean_squared_error
-
 # 243 933 42 
-number = 9101307
+number = 243
 print(number)
 torch.manual_seed(number)
 np.random.seed(number)
-
-class DatasetBatchIterator:
-    def __init__(self, X, Y, batch_size, shuffle=True):
-        self.X = np.asarray(X)
-        self.Y = np.asarray(Y)
-
-        if shuffle:
-            index = np.random.permutation(X.shape[0])
-            X = self.X[index]
-            Y = self.Y[index]
-        self.batch_size = batch_size
-        self.n_batches = int(np.ceil(X.shape[0] / batch_size))
-        self._current = 0
-
-    def __iter__(self):
-        return self
-    
-    def __next__(self):
-        return self.next()
-    
-    def next(self):
-        if self._current >= self.n_batches:
-            raise StopIteration()
-        k = self._current
-        self._current += 1
-        bs = self.batch_size
-        X_batch = torch.LongTensor(self.X[k*bs:(k+1)*bs])
-        Y_batch = torch.FloatTensor(self.Y[k*bs:(k+1)*bs])
-        return X_batch, Y_batch.view(-1, 1)
 
 class NeuronalColaborativeFilter(nn.Module):
 
     def __init__(self, user_count, item_count, ratings_train, movies, embedding_size=64, hidden_layers=(128,64,32,16), dropout_rate=None, output_range=(1,5), k=5):
         super().__init__()
-        self.movies = movies
+
         self.ratings = ratings_train
-        self.ratings_x = ratings_train[['userId', 'movieId']]
-        self.ratings_x.loc[:,'userId'] = self.ratings_x['userId'] - 1
-        movies_idx = self.findIdx(self.ratings_x['movieId'].values.tolist())
-        self.ratings_x.loc[:,'movieId'] = movies_idx
-        self.ratings_y = ratings_train['rating'].astype(np.float32)
-        
+        self.movies = movies
         self.topK = k
 
         ## Initialize the GPU device to compute
@@ -78,7 +42,7 @@ class NeuronalColaborativeFilter(nn.Module):
         ## Initialize output normalization parameters
         assert output_range and len(output_range) == 2, "output range has to be tuple with two integers"
         self.norm_min = min(output_range)
-        self.norm_range = abs(output_range[0]-output_range[1]) + 1
+        self.norm_range = abs(output_range[0]-output_range[1])
         
         self.initParams()
 
@@ -133,10 +97,9 @@ class NeuronalColaborativeFilter(nn.Module):
     ## This function will be auto invoked
     def forward(self, user_id, item_id):
         ## Access the features of user_id and item_id
-        
-        user_features = self.user_embedding(user_id)
-        item_features = self.item_embedding(item_id)
-        
+        user_features = self.user_embedding(user_id % self.user_hash_size)
+        item_features = self.item_embedding(item_id % self.item_hash_size)
+
         ## Concat the features of user and item in one feature representation
         x = torch.cat([user_features, item_features], dim=1)
         if hasattr(self, 'dropout'):
@@ -149,30 +112,20 @@ class NeuronalColaborativeFilter(nn.Module):
         normalized_output = x * self.norm_range + self.norm_min
         return normalized_output
 
-    def findIdx(self, movie_ids):
-        idx = []
-        listMovies = self.movies['movieId'].values.tolist()
-        for movie_id in movie_ids:
-            if movie_id in listMovies:
-                idx.append(listMovies.index(movie_id))
-            # else:
-            #     print("eroorrrr")
-        return idx
-
-    
-    def trainingModel(self, lr, wd, max_epochs, early_stop_epoch_threshold, batch_size):
+    def trainingModel(self, lr, wd, max_epochs, early_stop_epoch_threshold, batch_size, ratings_train):
         # self.initParams()
         self.train()
 
         ## Training loop control parameters
         no_loss_reduction_epoch_counter = 0
         min_loss = np.inf
+        min_loss_model_weights = None
         
         # Use GPU to run the Neuronal Network
         self.to(self.device)
 
         ## Loss function: Huber Error -> combination of MAE and MSE
-        beta = 0.25
+        beta = 0.5
         loss_criterion = nn.SmoothL1Loss(reduction='sum', beta=beta)
         ## Adam optimizer
         optimizer = optim.Adam(self.parameters(), lr=lr, weight_decay=wd)
@@ -183,49 +136,99 @@ class NeuronalColaborativeFilter(nn.Module):
         ## Each epoch update our model
         for epoch in range(max_epochs):
             epoch_loss = 0.0
-
-            for x_batch, y_batch in DatasetBatchIterator(self.ratings_x, self.ratings_y, batch_size=batch_size, shuffle=True):
-                x_batch, y_batch = x_batch.to(device=self.device), y_batch.to(device=self.device)
-
+            
+            # Shuffle the training data to help the learning to avoid the overfitting and improve the model generalization
+            shuffled_indices = np.random.permutation(len(ratings_train))
+            shuffled_ratings_train = ratings_train.iloc[shuffled_indices]
+            
+            # Iterate over batches according batch size for a faster computation
+            for i in range(0, len(ratings_train), batch_size):
+                batch = shuffled_ratings_train[i:i+batch_size]
+                # Transformer the dates to the tensor format to star the computation
+                user_ids = torch.tensor(batch['userId'].values, dtype=torch.long, device=self.device)
+                item_ids = torch.tensor(batch['movieId'].values, dtype=torch.long, device=self.device)
+                ratings = torch.tensor(batch['rating'].values, dtype=torch.float, device=self.device)
+                
+                # Initialize the gradients
                 optimizer.zero_grad()
-                with torch.set_grad_enabled(True):
-                    outputs = self(x_batch[:, 0], x_batch[:, 1])
-                    loss = loss_criterion(outputs, y_batch)
-                    loss.backward()
-                    optimizer.step()
-                epoch_loss += loss.item()
-        
-            epoch_loss = epoch_loss / len(self.ratings_x)
-            print(f'Epoch: {epoch+1}, Loss: {epoch_loss}')
 
+                # Compute the predictions
+                outputs = self(user_ids, item_ids)
+                
+                # Compute the loss function
+                loss = loss_criterion(outputs.squeeze(), ratings)
+                loss.backward()
+
+                # Update the parameters of NCF
+                optimizer.step()
+
+                # Acumulate the total error
+                epoch_loss += loss.item()
+
+            # Mean epoch loss
+            epoch_loss /= len(ratings_train)
+            # print(f'Epoch [{epoch+1}/{max_epochs}], Loss: {epoch_loss}')
+
+            # Early stopping based on validation loss
             if epoch_loss < min_loss:
                 min_loss = epoch_loss
+                min_loss_model_weights = self.state_dict()
                 no_loss_reduction_epoch_counter = 0
             else:
                 no_loss_reduction_epoch_counter += 1
+
             if no_loss_reduction_epoch_counter >= early_stop_epoch_threshold:
-                print(f'Early stop at epoch {epoch+1}')
+                print(f'Early stopping at epoch {epoch+1} due to no reduction in loss for {early_stop_epoch_threshold} epochs.')
                 break
+
+        # Load the model weights with the minimum validation loss
+        if min_loss_model_weights:
+            self.load_state_dict(min_loss_model_weights)
+
+
+    def compute_accuracy(self, outputs, ratings):
+        predictions = outputs.squeeze()
+        # print(predictions)
+        rounded_predictions = []
+
+        for prediction in predictions:
+            if prediction - int(prediction) < 0.25:
+                rounded_predictions.append(int(prediction))
+            elif prediction % 1 < 0.75:
+                rounded_predictions.append(int(prediction) + 0.5)
+            else:
+                rounded_predictions.append(int(prediction) + 1)
+
+        rounded_predictions = torch.tensor(rounded_predictions, device=self.device)
+        correct_predictions = (rounded_predictions == ratings).sum().item()
+        total_predictions = ratings.size(0)
+        if (total_predictions == 0): return 0
+        accuracy = correct_predictions / total_predictions
+        return accuracy
 
     def evaluateModel(self, ratings_val, batch_size):
         self.eval()
-        ratings_val_x = ratings_val[['userId', 'movieId']]
-        ratings_val_x.loc[:,'userId'] = ratings_val_x['userId'] - 1
-        movies_idx = self.findIdx(ratings_val_x['movieId'].values.tolist())
-        ratings_val_x.loc[:,'movieId'] = movies_idx
-        ratings_val_y = ratings_val[['rating']]
-        groud_truth, predictions = [], []
-        with torch.no_grad():
-            for x_batch, y_batch in DatasetBatchIterator(ratings_val_x, ratings_val_y, batch_size=batch_size, shuffle=False):
-                x_batch, y_batch = x_batch.to(device=self.device), y_batch.to(device=self.device)
+        total_accuracy = 0.0
+
+        for i in range(0, len(ratings_val), batch_size):
+            batch = ratings_val[i:i+batch_size]
+            # Transformer the dates to the tensor format to star the computation
+            user_ids = torch.tensor(batch['userId'].values, dtype=torch.long, device=self.device)
+            item_ids = torch.tensor(batch['movieId'].values, dtype=torch.long, device=self.device)                
+            ratings = torch.tensor(batch['rating'].values, dtype=torch.float, device=self.device)
+
+            # Compute predictions
+            with torch.no_grad():
+                outputs = self(user_ids, item_ids)
                 
-                outputs = self(x_batch[:, 0], x_batch[:, 1])
-                groud_truth.extend(y_batch.tolist())
-                predictions.extend(outputs.tolist())
-        groud_truth = np.array(groud_truth).ravel()
-        predictions = np.array(predictions).ravel()
-        RMSE = np.sqrt(mean_squared_error(groud_truth, predictions))
-        print(f'RMSE: {RMSE}')
+            # Compute accuracy for this batch
+            batch_accuracy = self.compute_accuracy(outputs, ratings)
+            total_accuracy += batch_accuracy
+
+        # Compute mean accuracy
+        total_accuracy /= (len(ratings_val) / batch_size)
+        print(total_accuracy)
+        return total_accuracy
 
     ## Prediction of rating for a movie
     def predictRatingMovie(self, user_id, movie_id):
@@ -250,10 +253,10 @@ class NeuronalColaborativeFilter(nn.Module):
     def predictUnseenMoviesRating(self, userId):
         recommendations = []
         unseenMovies = self.findUnseenMoviesByUser(userId)
-        for unseenMovie in unseenMovies:
-            movieIdx = self.findIdx([unseenMovie])[0]
-            rating = self.predictRatingMovie(userId-1, movieIdx)
-            recommendations.append((unseenMovie, rating))
+        for movieId in unseenMovies:
+            rating = self.predictRatingMovie(userId, movieId)
+            recommendations.append((movieId, rating))
+
         recommendations = sorted(recommendations, key=lambda x:x[1], reverse=True)
         self.recommendations = recommendations
         return recommendations
@@ -290,25 +293,26 @@ if __name__ == "__main__":
     users_idy = sorted(list(set(ratings_train["userId"].values)))
     
     start = time.time()
-    target_user_idx = 1
+    target_user_idx = 11
     print('The prediction for user ' + str(target_user_idx) + ':')
 
     ncf = NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, dataset['movies.csv'])
 
     ## Hyper parameters
-    lr = 1e-3   # Learning rate to update the model parameters
-    wd = 1e-5   # Weight decay to avoid the overfitting
+    lr = 1e-3   # Learning rate
+    print(lr)
+    wd = 1e-4   # Weight decay to avoid the overfitting
 
     # Batch size define how many data will be compute in an iteration, This help to improve the efficiency and accuracy
-    batch_size = 64
-    max_epochs = 50
+    batch_size = 1024
+    max_epochs = 500
 
     # The counter that avoid no reduction more than 3 epochs 
-    early_stop_epoch_threshold = 5
+    early_stop_epoch_threshold = 3
 
-    ncf.trainingModel(lr, wd, max_epochs, early_stop_epoch_threshold, batch_size)
+    ncf.trainingModel(lr, wd, max_epochs, early_stop_epoch_threshold, batch_size, ratings_train)
+
     ncf.evaluateModel(ratings_train, batch_size)
-    ncf.evaluateModel(ratings_val, batch_size)
     recommendations = ncf.predictUnseenMoviesRating(target_user_idx)
     ncf.printTopRecommendations()
     ncf.validation(ratings_val, target_user_idx)

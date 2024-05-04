@@ -24,12 +24,12 @@ if __name__ == "__main__":
     start = time.time()
     print("Start the prediction of neuronal colaborative filter based recommender ...")
 
-    seed = 243
+    seed = 9101307
     torch.manual_seed(seed)
     np.random.seed(seed)
     ncfRecommender = ncf.NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, movies)
-    ncfRecommender.trainingModel(lr=1e-3, wd=1e-4, max_epochs = 500, batch_size = 1024,  early_stop_epoch_threshold = 3, ratings_train=ratings_train)
-    
+    ncfRecommender.trainingModel(lr=1e-3, wd=1e-5, max_epochs = 50, batch_size = 64,  early_stop_epoch_threshold = 5)
+    ncfRecommender.evaluateModel(ratings_val, batch_size = 64)
     end = time.time()
     print('NCF MODEL Computation time: ' + str(end-start))
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         print(' Similarity with neuronal colaborative filter recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     ncfDF = pd.DataFrame(ncfSim, columns=['userId', 'ncfSim'])
-    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Neuronal_colaborative_filter_experimentation\ncfSim.csv'
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Neuronal_colaborative_filter_experimentation\ncfSim2.csv'
     ncfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)

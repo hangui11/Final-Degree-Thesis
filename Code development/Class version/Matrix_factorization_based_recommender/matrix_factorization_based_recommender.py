@@ -128,12 +128,12 @@ class MatrixFactorization:
             P = np.nan_to_num(P)
             Q = np.nan_to_num(Q)
             
-            loss = np.sum(e ** 2) + (beta/2) * (np.sum(P ** 2) + np.sum(Q ** 2))
+            loss = np.sum(e ** 2)/len(e) + (beta/2) * (np.sum(P ** 2) + np.sum(Q ** 2))
             if loss < 0.001:
                 break
 
-            if abs(loss-loss_previous) < 10e-3:
-                print('The loss respect previous loss is small than 0.0001 at the iteration: ' + str(iteration))
+            if abs(loss-loss_previous) < 1e-3:
+                print('The loss respect previous loss is small than 0.001 at the iteration: ' + str(iteration))
                 break
             else: loss_previous = loss
             
@@ -194,8 +194,9 @@ if __name__ == "__main__":
 
     matrixFactorizations = MatrixFactorization(ratings_train, dataset["movies.csv"], users_idy)
     nP, nQ = matrixFactorizations.matrix_factorization()
-
+    
     recommendations = matrixFactorizations.getRecommendations(target_user_idx)
+    # print(recommendations)
     matrixFactorizations.printTopRecommendations()
     matrixFactorizations.validation(ratings_val, target_user_idx)
 

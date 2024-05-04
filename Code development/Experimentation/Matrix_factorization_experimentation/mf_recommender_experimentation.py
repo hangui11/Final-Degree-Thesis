@@ -42,7 +42,7 @@ if __name__ == "__main__":
         print(' Similarity with matrix factorization recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     mfDF = pd.DataFrame(mfSim, columns=['userId', 'mfSim'])
-    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Matrix_factorization_experimentation\mfSim.csv'
+    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Matrix_factorization_experimentation\mfSim1.csv'
     mfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)
