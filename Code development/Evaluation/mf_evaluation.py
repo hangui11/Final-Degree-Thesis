@@ -1,0 +1,87 @@
+import os
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+
+current_dir = os.path.dirname(os.path.abspath("__file__"))
+code_development_dir = os.path.dirname(current_dir)
+mf_dir = os.path.join(code_development_dir, "Experimentation/Matrix_factorization_experimentation")
+
+def read_csv(path):
+    df = pd.read_csv(path)
+    return df
+    
+
+if __name__ == "__main__":
+    # Set the random seed for reproducibility
+    np.random.seed(2049)
+
+    mfPath = mf_dir + '/mfSim_v'
+    
+    mfSim1 = read_csv(mfPath+'1.csv')
+    mf1 = mfSim1['mfSim'].values.tolist()
+
+    mfSim2 = read_csv(mfPath+'2.csv')
+    mf2 = mfSim2['mfSim'].values.tolist()
+
+    mfSim3 = read_csv(mfPath+'3.csv')
+    mf3 = mfSim3['mfSim'].values.tolist()
+
+    mfSim4 = read_csv(mfPath+'4.csv')
+    mf4 = mfSim4['mfSim'].values.tolist()
+
+    mfSim5 = pd.read_csv(mfPath+'5.csv')
+    mf5 = mfSim5['mfSim'].values.tolist()
+
+    mfSim6 = pd.read_csv(mfPath+'6.csv')
+    mf6 = mfSim6['mfSim'].values.tolist()
+
+
+    users = len(mfSim1)
+    
+    mfCount1, mfCount2, mfCount3, mfCount4, mfCount5, mfCount6 = 0, 0, 0, 0, 0, 0, 
+    for i in range(users):
+        maxSim = max(mf1[i], mf2[i], mf3[i], mf4[i])
+        if maxSim == mf1[i]: mfCount1 += 1
+        if maxSim == mf2[i]: mfCount2 += 1
+        if maxSim == mf3[i]: mfCount3 += 1
+        if maxSim == mf4[i]: mfCount4 += 1
+        if maxSim == mf5[i]: mfCount5 += 1
+        if maxSim == mf6[i]: mfCount6 += 1
+
+    version = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6']
+    versionSim = [mfCount1, mfCount2, mfCount3, mfCount4, mfCount5, mfCount6]
+    plt.bar(version, versionSim)
+    plt.xlabel('VERSIONS')
+    plt.ylabel('NUMBER OF USERS')
+    plt.title('NUMBER OF USERS WITH DIFFERENT VERSIONS')
+    plt.savefig('../Images/number_users_mf.png')
+    plt.show()
+
+    n = 5
+    X_axis = np.arange(n) 
+    width = 0.6
+    randomUsers = [np.random.randint(0, users) for i in range(n)]
+    
+    mfUsersSim1 = mfSim1.loc[mfSim1['userId'].isin(randomUsers)]['mfSim'].values.tolist()
+    mfUsersSim2 = mfSim2.loc[mfSim2['userId'].isin(randomUsers)]['mfSim'].values.tolist()
+    mfUsersSim3 = mfSim3.loc[mfSim3['userId'].isin(randomUsers)]['mfSim'].values.tolist()
+    mfUsersSim4 = mfSim4.loc[mfSim4['userId'].isin(randomUsers)]['mfSim'].values.tolist()
+    mfUsersSim5 = mfSim5.loc[mfSim5['userId'].isin(randomUsers)]['mfSim'].values.tolist()
+    mfUsersSim6 = mfSim6.loc[mfSim6['userId'].isin(randomUsers)]['mfSim'].values.tolist()
+
+    plt.figure(figsize=(12,8))
+    plt.bar(X_axis-0.3, mfUsersSim1, width/6, label='v1')
+    plt.bar(X_axis-0.2, mfUsersSim2, width/6, label='v2')
+    plt.bar(X_axis-0.1, mfUsersSim3, width/6, label='v3')
+    plt.bar(X_axis+0, mfUsersSim4, width/6, label='v4')
+    plt.bar(X_axis+0.1, mfUsersSim5, width/6, label='v5')
+    plt.bar(X_axis+0.2, mfUsersSim6, width/6, label='v6')
+    plt.xticks(X_axis, randomUsers)
+    plt.legend(loc='upper right', prop={"size": 10})
+    plt.title('DIFFERENT SIMILARITY FOR RANDOM USERS')
+    plt.xlabel('VERSION OF MF')
+    plt.ylabel('SIMILARITY')
+    plt.savefig('../Images/mf_random_users.png', dpi=100)
+
+

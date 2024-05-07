@@ -1,9 +1,14 @@
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-from utils import *
+import os 
 import pandas as pd
 import numpy as np
 import time
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(code_development_dir)
+
+from utils import *
 
 class UserToUser:
     def __init__(self, ratings_train, movies, users, k=5) -> None:

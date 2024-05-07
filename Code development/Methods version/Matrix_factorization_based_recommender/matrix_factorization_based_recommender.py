@@ -1,9 +1,15 @@
+import os
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-from utils import *
 import numpy as np
 import time
 import math
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(code_development_dir)
+
+from utils import *
+
 '''
 Intentamos siempre de actualizar cada valor de latente (K) de P i Q para prevenir de mejor manera el modelo, en este capítulo usamos el descenso de gradiente para
 computar y prevenir el nuestro modelo, que es rating prediction

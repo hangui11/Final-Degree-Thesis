@@ -48,15 +48,15 @@ def split_users(ratings: object , k: int = 5) -> tuple:
     Returns:
         Tuple of DataFrames: Two DataFrames, the first containing training data, and the second containing validation data.
     """
-    ratings_train, rating_validation = [], []
+    # ratings_train, rating_validation = [], []
         
-    for idx, ratings_users in ratings.groupby("userId"):
-        ratings_users = ratings_users.sample(frac=1, random_state=42)
-        rating_validation.append(ratings_users.iloc[:k]) # First top k rows
-        ratings_train.append(ratings_users.iloc[k:]) # Remaining M-k rows
-        
-    train, val = sklearn.model_selection.train_test_split(ratings, test_size= 0.2, random_state=42)
+    # for idx, ratings_users in ratings.groupby("userId"):
+    #     ratings_users = ratings_users.sample(frac=1, random_state=42)
+    #     rating_validation.append(ratings_users.iloc[:k]) # First top k rows
+    #     ratings_train.append(ratings_users.iloc[k:]) # Remaining M-k rows
     # return pd.concat(ratings_train), pd.concat(rating_validation)
+    
+    train, val = sklearn.model_selection.train_test_split(ratings, test_size= 0.2, random_state=42)
     return train, val
 
 

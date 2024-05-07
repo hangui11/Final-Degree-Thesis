@@ -1,9 +1,15 @@
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-from utils import *
+import os
 import numpy as np
 import time
 import math
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(code_development_dir)
+
+from utils import *
+
 '''
 Intentamos siempre de actualizar cada valor de latente (K) de P i Q para prevenir de mejor manera el modelo, en este capítulo usamos el descenso de gradiente para
 computar y prevenir el nuestro modelo, que es rating prediction
@@ -34,9 +40,7 @@ no vistos y que es menos propenso al sobreajuste.
 Regularization Term= β/2 ∑k=1 (P[i][k]^2 + Q[k][j]^2)
 
 '''
-# number = 42
-# print(number)
-# np.random.seed(number)
+
 
 class MatrixFactorization:
     def __init__(self, ratings_train, movies, users_idy, k=5, featureSize=8) -> None:
@@ -176,6 +180,11 @@ class MatrixFactorization:
         return sim
 
 if __name__ == "__main__":
+
+    # Set the seed for reproducibility
+    number = 9101307 
+    np.random.seed(number)
+
     # Load the dataset
     path_to_ml_latest_small = './ml-latest-small/'
     dataset = load_dataset_from_source(path_to_ml_latest_small)

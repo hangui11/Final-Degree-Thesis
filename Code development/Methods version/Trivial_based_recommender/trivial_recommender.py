@@ -1,11 +1,16 @@
-import pandas as pd 
-import time 
+import os
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
+import pandas as pd 
+import time
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(code_development_dir)
+
 from utils import *
 
-def naive_recommender(ratings: object, movies:object, k: int = 5) -> list: 
-    # Provide the code for the naive recommender here. This function should return 
+def trivial_recommender(ratings: object, movies:object, k: int = 5) -> list: 
+    # Provide the code for the trivial recommender here. This function should return 
     # the list of the top most viewed films according to the ranking (sorted in descending order).
     # Consider using the utility functions from the pandas library.
     ratingsMean = ratings[['movieId', 'rating']].groupby(by=['movieId']).mean()
@@ -35,21 +40,21 @@ if __name__ == "__main__":
 
     start = time.time()
 
-     ## naive recommender
-    topMovieNaive = naive_recommender(ratings_train, dataset["movies.csv"], 5)
-    topMovieNaive = topMovieNaive['movieId'].values.tolist()
-    for recomendation in topMovieNaive:
+     ## trivial recommender
+    topMovieTrivial = trivial_recommender(ratings_train, dataset["movies.csv"], 5)
+    topMovieTrivial = topMovieTrivial['movieId'].values.tolist()
+    for recomendation in topMovieTrivial:
         rec_movie = dataset["movies.csv"][dataset["movies.csv"]["movieId"]  == recomendation]
         print (" Recomendation: Movie:{} (Genre: {})".format(rec_movie["title"].values[0], rec_movie["genres"].values[0]))
     
      # Validation
     matrixmpa_genres, validationMoviesGenres = validationMoviesGenres(dataset["movies.csv"], ratings_val, target_user_idx)
     
-    recommendsMoviesNaive = matrixmpa_genres.loc[topMovieNaive]
+    recommendsMoviesTrivial = matrixmpa_genres.loc[topMovieTrivial]
     
     # sim entre matriu genere amb recomanador sistema
-    sim = cosinuSimilarity(validationMoviesGenres, recommendsMoviesNaive)
-    print(' Similarity with naive recommender: ' + str(sim))
+    sim = cosinuSimilarity(validationMoviesGenres, recommendsMoviesTrivial)
+    print(' Similarity with trivial recommender: ' + str(sim))
     
     end = time.time()
     print("The execution time: " + str(end-start) + " seconds")

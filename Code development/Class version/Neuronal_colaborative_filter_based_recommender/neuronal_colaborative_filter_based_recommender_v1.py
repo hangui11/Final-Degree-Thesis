@@ -1,11 +1,17 @@
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-from utils import *
+import os
 import torch
 import numpy as np
 import time
 import torch.nn as nn
 import torch.optim as optim
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+code_develpment_dri = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(code_develpment_dri)
+
+from utils import *
+
 # 243 933 42 
 number = 243
 print(number)

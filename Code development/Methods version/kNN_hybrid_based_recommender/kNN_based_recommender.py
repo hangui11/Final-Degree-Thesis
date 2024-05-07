@@ -1,12 +1,17 @@
+import os
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Methods version")
-from utils import *
 import numpy as np
 import time
+
+currentpath = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(currentpath))
+methods_version_dir = os.path.join(code_development_dir, "Methods version")
+sys.path.append(code_development_dir)
+sys.path.append(methods_version_dir)
+
 from Item_based_recommender import item_based_recommender as item
 from User_based_recommender import user_based_recommender as user
-
+from utils import *
 
 def mergeUsersAndItemsRecommendations(usersRecommendations, itemsRecommendations):
     ## method 1: using pandas

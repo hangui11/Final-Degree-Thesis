@@ -1,9 +1,17 @@
+import os
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
+import time
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+class_version_dir = os.path.join(code_development_dir, "Class version")
+user_dir = os.path.join(code_development_dir, "Experimentation/User_experimentation")
+sys.path.append(code_development_dir)
+sys.path.append(class_version_dir)
+
 from utils import *
 from User_based_recommender import user_based_recommender as user # type: ignore
-import time 
+
 
 if __name__ == "__main__":
     # Load the dataset
@@ -34,7 +42,7 @@ if __name__ == "__main__":
         print(' Similarity with user-to-user recommender for user: '+ str(userId) + ' is ' + str(sim))
         
     userDF = pd.DataFrame(userSim, columns=['userId', 'userSim'])
-    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\User_experimentation\userSim.csv'
+    path = user_dir + '/userSim.csv'
     userDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

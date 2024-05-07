@@ -1,11 +1,19 @@
+import os
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
-from utils import *
-from Neuronal_colaborative_filter_based_recommender import neuronal_colaborative_filter_based_recommender as ncf # type: ignore
 import time 
 import torch
 import numpy as np
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+class_version_dir = os.path.join(code_development_dir, "Class version")
+ncf_dir = os.path.join(code_development_dir, "Experimentation/Neuronal_colaborative_filter_experimentation")
+sys.path.append(code_development_dir)
+sys.path.append(class_version_dir)
+
+from utils import *
+from Neuronal_colaborative_filter_based_recommender import neuronal_colaborative_filter_based_recommender as ncf # type: ignore
+
 
 if __name__ == "__main__":
     # Load the dataset
@@ -28,7 +36,7 @@ if __name__ == "__main__":
     torch.manual_seed(seed)
     np.random.seed(seed)
     ncfRecommender = ncf.NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, movies)
-    ncfRecommender.trainingModel(lr=1e-3, wd=1e-5, max_epochs = 50, batch_size = 64,  early_stop_epoch_threshold = 5)
+    ncfRecommender.trainingModel(lr=1e-3, wd=1e-4, max_epochs = 50, batch_size = 64,  early_stop_epoch_threshold = 5)
     ncfRecommender.evaluateModel(ratings_val, batch_size = 64)
     end = time.time()
     print('NCF MODEL Computation time: ' + str(end-start))
@@ -44,7 +52,7 @@ if __name__ == "__main__":
         print(' Similarity with neuronal colaborative filter recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     ncfDF = pd.DataFrame(ncfSim, columns=['userId', 'ncfSim'])
-    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Neuronal_colaborative_filter_experimentation\ncfSim2.csv'
+    path = ncf_dir + '/ncfSim.csv'
     ncfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)

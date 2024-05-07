@@ -59,13 +59,19 @@ the gradient is the derivate of the objective function
 #             break           
 #     return P, Q
 
+import os
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-from utils import *
 import numpy as np
 import time
 import torch
 import torch.nn as nn
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(code_development_dir)
+
+from utils import *
+
 
 def findMovieIndex(moviesList, value):
     for i in range(len(moviesList)):

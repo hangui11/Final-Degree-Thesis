@@ -1,10 +1,18 @@
+import os
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
-from utils import *
-from Matrix_factorization_based_recommender import matrix_factorization_based_recommender as mf # type: ignore
 import time 
 import numpy as np
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+class_version_dir = os.path.join(code_development_dir, "Class version")
+mf_dir = os.path.join(code_development_dir, "Experimentation/Matrix_factorization_experimentation")
+sys.path.append(code_development_dir)
+sys.path.append(class_version_dir)
+
+from utils import *
+from Matrix_factorization_based_recommender import matrix_factorization_based_recommender as mf # type: ignore
+
 
 if __name__ == "__main__":
     # Load the dataset
@@ -42,7 +50,7 @@ if __name__ == "__main__":
         print(' Similarity with matrix factorization recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     mfDF = pd.DataFrame(mfSim, columns=['userId', 'mfSim'])
-    path = r'C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Matrix_factorization_experimentation\mfSim1.csv'
+    path = mf_dir + '/mfSim.csv'
     mfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)

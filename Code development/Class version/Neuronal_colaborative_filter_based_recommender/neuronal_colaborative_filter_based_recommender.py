@@ -1,6 +1,5 @@
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-from utils import *
+import os
 import torch
 import numpy as np
 import time
@@ -8,11 +7,11 @@ import torch.nn as nn
 import torch.optim as optim
 from sklearn.metrics import mean_squared_error
 
-# 243 933 42 
-number = 9101307
-print(number)
-torch.manual_seed(number)
-np.random.seed(number)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(code_development_dir)
+
+from utils import *
 
 class DatasetBatchIterator:
     def __init__(self, X, Y, batch_size, shuffle=True):
@@ -155,8 +154,9 @@ class NeuronalColaborativeFilter(nn.Module):
         for movie_id in movie_ids:
             if movie_id in listMovies:
                 idx.append(listMovies.index(movie_id))
-            # else:
-            #     print("eroorrrr")
+            else:
+                print("Error: movie_id not found")
+                break
         return idx
 
     
@@ -196,7 +196,7 @@ class NeuronalColaborativeFilter(nn.Module):
                 epoch_loss += loss.item()
         
             epoch_loss = epoch_loss / len(self.ratings_x)
-            print(f'Epoch: {epoch+1}, Loss: {epoch_loss}')
+            # print(f'Epoch: {epoch+1}, Loss: {epoch_loss}')
 
             if epoch_loss < min_loss:
                 min_loss = epoch_loss
@@ -272,11 +272,15 @@ class NeuronalColaborativeFilter(nn.Module):
         
         # sim entre matriu genere amb recomanador user
         sim = cosinuSimilarity(validationMoviesGenress, recommendsMoviesUser)
-        print(' Similarity with neuronal colaborative filter recommender: ' + str(sim))
+        # print(' Similarity with neuronal colaborative filter recommender: ' + str(sim))
         return sim
 
 if __name__ == "__main__":
-
+    # Set the random seed for reproducibility
+    number = 9101307
+    torch.manual_seed(number)
+    np.random.seed(number)
+    
     # Load the dataset
     path_to_ml_latest_small = './ml-latest-small/'
     dataset = load_dataset_from_source(path_to_ml_latest_small)
@@ -297,7 +301,7 @@ if __name__ == "__main__":
 
     ## Hyper parameters
     lr = 1e-3   # Learning rate to update the model parameters
-    wd = 1e-5   # Weight decay to avoid the overfitting
+    wd = 1e-4   # Weight decay to avoid the overfitting
 
     # Batch size define how many data will be compute in an iteration, This help to improve the efficiency and accuracy
     batch_size = 64
@@ -307,7 +311,7 @@ if __name__ == "__main__":
     early_stop_epoch_threshold = 5
 
     ncf.trainingModel(lr, wd, max_epochs, early_stop_epoch_threshold, batch_size)
-    ncf.evaluateModel(ratings_train, batch_size)
+    # ncf.evaluateModel(ratings_train, batch_size)
     ncf.evaluateModel(ratings_val, batch_size)
     recommendations = ncf.predictUnseenMoviesRating(target_user_idx)
     ncf.printTopRecommendations()

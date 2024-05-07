@@ -1,17 +1,17 @@
-import os
+import os 
 import sys
 import time 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 code_development_dir = os.path.dirname(os.path.dirname(current_dir))
 class_version_dir = os.path.join(code_development_dir, "Class version")
-item_dir = os.path.join(code_development_dir, "Experimentation/Item_experimentation")
+trivial_dir = os.path.join(code_development_dir, "Experimentation/Trivial_experimentation")
+
 sys.path.append(code_development_dir)
 sys.path.append(class_version_dir)
 
 from utils import *
-from Item_based_recommender import item_based_recommender as item # type: ignore
-
+from Trivial_based_recommender import trivial_recommender as trivial # type: ignore
 
 if __name__ == "__main__":
     # Load the dataset
@@ -28,27 +28,29 @@ if __name__ == "__main__":
     movies = dataset["movies.csv"]
 
     start = time.time()
-    print("Start the prediction of item-to-item based recommender ...")
+    print("Start the prediction of trivial based recommender ...")
 
-    itemRecommender = item.ItemToItem(ratings_train, movies, users_idy)
-    itemSim = []
+    trivialRecommender = trivial.Trivial(ratings_train, movies)
+    trivialRecommender.trivial_recommender()
+    trivialSim = []
     countSim = 0
-
+    
     for userId in users_idy:
-        itemRecommender.item_based_recommender(userId)
-        sim = itemRecommender.validation(ratings_val, userId)
+        sim = trivialRecommender.validation(ratings_val, userId)
         countSim += sim
-        itemSim.append((userId, sim))
-        print(' Similarity with item-to-item recommender for user: '+ str(userId) + ' is ' + str(sim))
+        
+        trivialSim.append((userId, sim))
 
-    itemDF = pd.DataFrame(itemSim, columns=['userId', 'itemSim'])
-    path = item_dir + '/itemSim.csv'
-    itemDF.to_csv(path, index=False)
+        print(' Similarity with trivial recommender for user: '+ str(userId) + ' is ' + str(sim))
+
+    trivialDF = pd.DataFrame(trivialSim, columns=['userId', 'trivialSim'])
+    path = trivial_dir + '/trivialSim.csv'
+    trivialDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)
 
     end = time.time()
 
-    print("End the prediction of item based recommender")
+    print("End the prediction of trivial based recommender")
     print("The prediction has an average similarity of: " + str(countSimAverage))
     print("The execution time: " + str(end-start) + " seconds")

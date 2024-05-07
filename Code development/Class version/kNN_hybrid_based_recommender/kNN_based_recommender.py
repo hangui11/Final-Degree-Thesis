@@ -1,9 +1,15 @@
 import sys
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development")
-sys.path.append("C:\\Users\\usuario\\Desktop\\FIB\\Final-Degree-Thesis\\Code development\\Class version")
-from utils import *
+import os
 import numpy as np
 import time
+
+currentpath = os.path.dirname(os.path.abspath(__file__))
+code_development_dir = os.path.dirname(os.path.dirname(currentpath))
+class_version_dir = os.path.join(code_development_dir, "Class version")
+sys.path.append(code_development_dir)
+sys.path.append(class_version_dir)
+
+from utils import *
 from Item_based_recommender import item_based_recommender as item
 from User_based_recommender import user_based_recommender as user
 
