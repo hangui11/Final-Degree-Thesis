@@ -36,7 +36,16 @@ if __name__ == "__main__":
     ratings_stats['rating_count'] = pd.DataFrame(ratings_expanded.groupby('title').count()['rating'])
     ratings_stats = ratings_stats.sort_values(by='rating_count', ascending=False)
     print(ratings_stats)
-    print('\n==========================================\n')
     print('Movies with at most 10 ratings rate by users: ', ratings_stats[ratings_stats['rating_count'] <= 10].shape[0]) 
+    print('\n==========================================\n')
+
+    ratings_expanded = pd.merge(ratings, movies, on='movieId', how='inner')
+    ratings_stats = pd.DataFrame(ratings_expanded.groupby('userId')['rating'].mean())
+    ratings_stats['rating_count'] = pd.DataFrame(ratings_expanded.groupby('userId').count()['rating'])
+    ratings_stats = ratings_stats.sort_values(by='rating_count', ascending=False)
+    print(ratings_stats)
+    print('Users rated at most 100 movies: ', ratings_stats[ratings_stats['rating_count'] <= 100].shape[0]) 
+
+
 
 
