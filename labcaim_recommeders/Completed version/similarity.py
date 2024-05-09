@@ -1,9 +1,7 @@
 import numpy as np
 
+# Compute the similarity between two vectors using pearson similarity
 def compute_similarity(vector1: list, vector2: list, mean_vector1: float, mean_vector2: float) -> float:
-    # # @TODO: Implement the actual computation of similarity between vector1 and vector2.
-    # The current implementation returns a placeholder value of 1. Update this function 
-    # to perform the appropriate similarity calculation and return the result.
     ratings1 = {key1: value1-mean_vector1 for key1, value1 in vector1}
     ratings2 = {key2: value2-mean_vector2 for key2, value2 in vector2}
 

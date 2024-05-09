@@ -3,6 +3,7 @@ import numpy as np
 import utils as ut
 from similarity import compute_similarity
 
+# Calcute the ratings mean for each user in the ratings matrix
 def calculateRatingsMean(matrix):
     ratingsMean = {}
     for k, v in matrix.items():
@@ -23,11 +24,11 @@ def generate_m(users, ratings):
         m[i] = userMoviesRating
     return m 
 
+# Get all unseen movies for a user in the ratings matrix
 def getUnseenmovies(seenMovies, matrix):
     unseenMovies = []
     first = True
-    
-    # obtenir les pelicules no avaluades per target user
+    # Obtain unrated movies for an user using seen movies
     for id, auxUser in matrix.items():
         auxUserList = list(auxUser.items())
         auxUserRating = pd.DataFrame(auxUserList, columns=['movieId', 'rating'])
@@ -37,12 +38,13 @@ def getUnseenmovies(seenMovies, matrix):
             unseenMovies = unseenMovies1
             first = not first
         else: 
-            # obtenir unseen movies no repetits
+            # Obtain no repeated unseen movies
             for i in unseenMovies1:
                 if not i in unseenMovies: unseenMovies.append(i)
     
     return unseenMovies
 
+# Compute the interest of unseen movies for a user in the ratings matrix using user-to-user similarity
 def user_based_recommender(target_user_idx, matrix):
     target_user = matrix[target_user_idx]
     recommendations = []
@@ -71,8 +73,8 @@ def user_based_recommender(target_user_idx, matrix):
     targetUser= pd.DataFrame(targetUserList, columns=['movieId', 'rating'])
     seenMovies = targetUser[['movieId']]
     seenMovies = seenMovies['movieId'].values.tolist()
-
     unseenMovies = getUnseenmovies(seenMovies, matrix)
+
     # Generate recommendations for unrated movies based on user similarity and ratings.
     # @ TODO 
     meanUser = usersRatingsMean[target_user_idx]
@@ -91,7 +93,7 @@ def user_based_recommender(target_user_idx, matrix):
     
     recommendations = sorted(recommendations, key=lambda x:x[1], reverse=True)
 
-    # Normalitzar les prediccions
+    # Normalize the prediction rating between 0 and 1
     max = recommendations[0][1]
     min = recommendations[len(recommendations)-1][1]
         
@@ -101,7 +103,6 @@ def user_based_recommender(target_user_idx, matrix):
         recommendations[i] = (recommendations[i][0], interest)
         
     return recommendations 
-
 
 
 if __name__ == "__main__":

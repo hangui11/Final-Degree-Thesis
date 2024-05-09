@@ -1,16 +1,13 @@
 import pandas as pd 
 import utils as ut
 
-# Compute the prediction of a user for a movie using the mean of the ratings of the movies
 def trivial_recommender(ratings: object, movies:object, k: int = 5) -> list: 
-    ratings_mean = ratings[['movieId', 'rating']].groupby(by=['movieId']).mean()
-
-    ratingsMovies = pd.merge(ratings_mean, movies, on='movieId', how='inner')
-    ratingsMovies = ratingsMovies.sort_values(by=['rating'], ascending=False)
-    ratingsMovies = ratingsMovies.head(k)[['movieId', 'rating']]
-
-    most_seen_movies = [tuple(x) for x in ratingsMovies[['movieId', 'rating']].values.tolist()]
-    return most_seen_movies
+    # Provide the code for the trivial recommender here. This function should return 
+    # the list of the top most viewed films according to the ranking (sorted in descending order).
+    # Consider using the utility functions from the pandas library.
+    most_seen_movies = []
+    
+    return most_seen_movies[:5]
 
 
 if __name__ == "__main__":

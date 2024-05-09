@@ -3,13 +3,14 @@ import pandas as pd
 import numpy as np
 from  similarity import compute_similarity
 
+# Calcute the ratings mean for each item in the ratings matrix
 def calculateRatingsMean(matrix):
     ratingsMean = {}
     for k, v in matrix.items():
         ratingsMean[k] = sum(v.values())/len(v)
     return ratingsMean
 
-    
+# Generate a rating matrix of items and users in the ratings matrix
 def generate_m(movies_idx, ratings):
     # Complete the datastructure for rating matrix 
     # @TODO
@@ -24,6 +25,7 @@ def generate_m(movies_idx, ratings):
         if len(rate) != 0:  m[i] = rate    
     return m 
 
+# Find the movies seen and unseen by a user in the ratings matrix
 def findItemsSeenAndNoSeenByUser(userId, matrix):
     seenMovies = {}
     unseenMovies = {}
@@ -32,11 +34,12 @@ def findItemsSeenAndNoSeenByUser(userId, matrix):
         else: unseenMovies[item] = users
     return (seenMovies, unseenMovies)
 
+# Compute the recommendations for a user in the ratings matrix using item-to-item similarity
 def item_based_recommender(target_user_idx, matrix):
-    # target_user = matrix[target_user_idx]
     recommendations = []
-    # Compute the similarity between  the target user and each other user in the matrix. 
-    # We recomend to store the results in a dataframe (userId and Similarity)
+    
+    # For each unseen movie, compute the similarity with seen movies for an user
+    # We recomend to store the results in a dataframe (itemId and Similarity)
     # @TODO 
     moviesRatingMean = calculateRatingsMean(matrix)
     seenMovies, unseenMovies = findItemsSeenAndNoSeenByUser(target_user_idx, matrix)
@@ -51,7 +54,7 @@ def item_based_recommender(target_user_idx, matrix):
         similarity = {}
         simMax = 0
         simMin = 0
-        # Trobar les similaritats de les pel·lícules vistes amb la pel·lícula no vista
+        # Find the similarity with seen movie for an user to compute the similarity with unseen movie for an user
         for kSeenMovies, vSeenMovies in seenMovies.items():
             usersListB = list(vSeenMovies.items())
             sim = compute_similarity(usersListA, usersListB, moviesRatingMean[kUnseenMovies], moviesRatingMean[kSeenMovies])
@@ -59,7 +62,7 @@ def item_based_recommender(target_user_idx, matrix):
             if simMin > sim: simMin = sim
             similarity[kSeenMovies] = sim
         
-        # Normalitzar les similituds
+        # Normalize the similarity and compute the prediction rating
         sumRateSim = 0
         similitude = 0
         for kSimilarity, vSimilarity in similarity.items():
@@ -67,14 +70,14 @@ def item_based_recommender(target_user_idx, matrix):
                 similarity[kSimilarity] = (vSimilarity - simMin) / (simMax-simMin)
                 sumRateSim += similarity[kSimilarity]*userRate[kSimilarity]
                 similitude += similarity[kSimilarity]
-        
-        # Predictir el rating de la pel·lícula no vista
+
         if sumRateSim == 0: predictRateUnseenMovies[kUnseenMovies] = 0
         else: predictRateUnseenMovies[kUnseenMovies] = sumRateSim/similitude
         recommendations.append((kUnseenMovies, predictRateUnseenMovies[kUnseenMovies]))
 
     recommendations = sorted(recommendations, key=lambda x:x[1], reverse=True)
-    # Normalitzar les prediccions
+
+    # Normalize the prediction rating between 0 and 1
     max = recommendations[0][1]
     min = recommendations[len(recommendations)-1][1]
     for i in range(len(recommendations)):
