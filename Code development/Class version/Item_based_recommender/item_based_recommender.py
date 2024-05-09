@@ -34,13 +34,17 @@ class ItemToItem():
             return 0  # No common users, similarity is 0
         
         # Calculate person similarity
-        sumAB, sumA, sumB = 0, 0, 0
-        for userId in common_users:
-            ratingA = ratingsA[userId]
-            ratingB = ratingsB[userId]
-            sumAB += ratingA * ratingB
-            sumA += ratingA ** 2
-            sumB += ratingB ** 2
+        # sumAB, sumA, sumB = 0, 0, 0
+        # for userId in common_users:
+        #     ratingA = ratingsA[userId]
+        #     ratingB = ratingsB[userId]
+        #     sumAB += ratingA * ratingB
+        #     sumA += ratingA ** 2
+        #     sumB += ratingB ** 2
+        
+        sumAB = sum([ratingsA[userId] * ratingsB[userId] for userId in common_users])
+        sumA = sum([ratingsA[userId] ** 2 for userId in common_users])
+        sumB = sum([ratingsB[userId] ** 2 for userId in common_users])
         
         # Check for division by zero
         if sumA == 0 or sumB == 0: return 0
