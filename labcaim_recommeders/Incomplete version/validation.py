@@ -57,7 +57,7 @@ if __name__ == "__main__":
     item_m = item.generate_m(movies_idx, ratings_train)
     item_rec = item.item_based_recommender(target_user_idx, item_m)
 
-    knn_rec = knn.mergeRecommendations(user_rec, item_rec)
+    knn_rec = knn.knn_hybrid_based_recommender(user_rec, item_rec)
 
     # Validation
     matrixmpa_genres = ut.matrix_genres(dataset["movies.csv"])

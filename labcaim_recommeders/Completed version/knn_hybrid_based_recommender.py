@@ -5,7 +5,7 @@ import user_based_recommender as user
 import item_based_recommender as item
 
 # Apply combination metric to combine user-to-user and item-to-item similarity
-def mergeRecommendations(usersRecommendations, itemsRecommendations):
+def knn_hybrid_based_recommender(usersRecommendations, itemsRecommendations):
     ## method 1: using pandas
     # recommenderUsers = pd.DataFrame(usersRecommendations, columns=['movieId', 'similarityUser'])
     # recommenderItems = pd.DataFrame(itemsRecommendations, columns=['movieId', 'similarityItem'])
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     recommendationsItem = item.item_based_recommender(target_user_idx, items_matrix)
     
     # combine user-to-user and item-to-item similarity
-    recommendations = mergeRecommendations(recommendationsUser, recommendationsItem)
+    recommendations = knn_hybrid_based_recommender(recommendationsUser, recommendationsItem)
 
     # The following code print the top 5 recommended films to the user
     for recomendation in recommendations[:5]:

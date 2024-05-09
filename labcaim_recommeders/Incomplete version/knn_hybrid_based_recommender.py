@@ -4,7 +4,7 @@ import user_based_recommender as user
 import item_based_recommender as item
 
 
-def mergeRecommendations(usersRecommendations, itemsRecommendations):
+def knn_hybrid_based_recommender(usersRecommendations, itemsRecommendations):
     # Provide the code for the hybrid recommender here. This function should return 
     # a list of the top most viewed films according to the combination of user-to-user and item-to-item similarity.
     # We recommend to use pandas library to merge the two recommendation lists and calculate the metric combination.
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     items_matrix = item.generate_m(movies_idx, ratings_train)
     recommendationsItem = item.item_based_recommender(target_user_idx, items_matrix)
      
-    recommendations = mergeRecommendations(recommendationsUser, recommendationsItem)
+    recommendations = knn_hybrid_based_recommender(recommendationsUser, recommendationsItem)
 
     # The following code print the top 5 recommended films to the user
     for recomendation in recommendations[:5]:
