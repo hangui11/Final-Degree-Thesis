@@ -49,7 +49,8 @@ class NeuronalColaborativeFilter(nn.Module):
         self.movies = movies
         self.ratings = ratings_train
         self.ratings_x = ratings_train[['userId', 'movieId']]
-        self.ratings_x.loc[:,'userId'] = self.ratings_x['userId'] - 1
+        users = sorted(list(set(ratings_train["userId"].values)))
+        self.ratings_x.loc[:,'userId'] = self.findIdxUser(self.ratings_x['userId'].values.tolist(), users)
         movies_idx = self.findIdx(self.ratings_x['movieId'].values.tolist())
         self.ratings_x.loc[:,'movieId'] = movies_idx
         self.ratings_y = ratings_train['rating'].astype(np.float32)
@@ -158,6 +159,16 @@ class NeuronalColaborativeFilter(nn.Module):
                 print("Error: movie_id not found")
                 break
         return idx
+    
+    def findIdxUser(self, user_ids, users):
+        idx = []
+        for user_id in user_ids:
+            if user_id in users:
+                idx.append(users.index(user_id))
+            else:
+                print("Error: user_id not found")
+                break
+        return idx
 
     
     def trainingModel(self, lr, wd, max_epochs, early_stop_epoch_threshold, batch_size):
@@ -207,10 +218,10 @@ class NeuronalColaborativeFilter(nn.Module):
                 print(f'Early stop at epoch {epoch+1}')
                 break
 
-    def evaluateModel(self, ratings_val, batch_size):
+    def evaluateModel(self, ratings_val, batch_size, users):
         self.eval()
         ratings_val_x = ratings_val[['userId', 'movieId']]
-        ratings_val_x.loc[:,'userId'] = ratings_val_x['userId'] - 1
+        ratings_val_x.loc[:,'userId'] = self.findIdxUser(ratings_val_x['userId'].values.tolist(), users)
         movies_idx = self.findIdx(ratings_val_x['movieId'].values.tolist())
         ratings_val_x.loc[:,'movieId'] = movies_idx
         ratings_val_y = ratings_val[['rating']]
@@ -247,12 +258,13 @@ class NeuronalColaborativeFilter(nn.Module):
 
         return unseenMovies
 
-    def predictUnseenMoviesRating(self, userId):
+    def predictUnseenMoviesRating(self, userId, users):
         recommendations = []
         unseenMovies = self.findUnseenMoviesByUser(userId)
         for unseenMovie in unseenMovies:
             movieIdx = self.findIdx([unseenMovie])[0]
-            rating = self.predictRatingMovie(userId-1, movieIdx)
+            userIdx = self.findIdxUser([userId], users)[0]
+            rating = self.predictRatingMovie(userIdx, movieIdx)
             recommendations.append((unseenMovie, rating))
         recommendations = sorted(recommendations, key=lambda x:x[1], reverse=True)
         self.recommendations = recommendations
@@ -312,7 +324,7 @@ if __name__ == "__main__":
 
     ncf.trainingModel(lr, wd, max_epochs, early_stop_epoch_threshold, batch_size)
     # ncf.evaluateModel(ratings_train, batch_size)
-    ncf.evaluateModel(ratings_val, batch_size)
+    ncf.evaluateModel(ratings_val, batch_size, users_idy)
     recommendations = ncf.predictUnseenMoviesRating(target_user_idx)
     ncf.printTopRecommendations()
     ncf.validation(ratings_val, target_user_idx)

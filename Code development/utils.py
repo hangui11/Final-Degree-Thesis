@@ -23,7 +23,7 @@ def load_dataset_from_source(path_to_ml_latest_small: str) -> dict:
     """
     contents = os.listdir(path_to_ml_latest_small)
     expected_content = ['README.txt', 'ratings.csv', 'tags.csv', 
-                        'movies.csv', 'links.csv', 'ratingsSmall.csv']
+                        'movies.csv', 'links.csv', 'ratingsSmall.csv', 'ratingsSmall_Small.csv']
     if set(contents) ==  set(expected_content): 
         dataset = {}
         for file in expected_content[1:]: 

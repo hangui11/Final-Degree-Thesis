@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # Ratings data
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
     
     # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         print(' Similarity with user-to-user recommender for user: '+ str(userId) + ' is ' + str(sim))
         
     userDF = pd.DataFrame(userSim, columns=['userId', 'userSim'])
-    path = user_dir + '/userSim.csv'
+    path = user_dir + '/userSimSmall_Small.csv'
     userDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

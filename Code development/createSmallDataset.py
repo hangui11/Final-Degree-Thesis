@@ -12,9 +12,9 @@ def createSmallDataset(ratings):
     ratings_stats = pd.DataFrame(ratings.groupby('userId')['rating'].mean())
     ratings_stats['rating_count'] = pd.DataFrame(ratings.groupby('userId').count()['rating'])
     ratings_stats = ratings_stats.sort_values(by='rating_count', ascending=False)
-    users = ratings_stats[ratings_stats['rating_count'] <= 500].index.tolist()
+    users = ratings_stats[ratings_stats['rating_count'] <= 200].index.tolist()
     ratings_small = ratings[ratings['userId'].isin(users)]
-
+    print(len(ratings_small))
     return ratings_small
 
 
@@ -28,6 +28,6 @@ if __name__ == '__main__':
 
 
     small_ratings = createSmallDataset(ratings)
-    path = dataset_dir + '/ratingsSmall.csv'
+    path = dataset_dir + '/ratingsSmall_Small.csv'
 
     small_ratings.to_csv(path, index=False)

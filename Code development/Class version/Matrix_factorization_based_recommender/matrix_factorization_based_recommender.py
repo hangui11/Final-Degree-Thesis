@@ -76,7 +76,8 @@ class MatrixFactorization:
 
             for j in data:
                 index = self.findMovieIndex(movies, j[0])
-                m[i-1][index] = (j[1])
+                userIdx = self.findMovieIndex(self.users, i)
+                m[userIdx][index] = (j[1])
 
         self.matrix = np.array(m)
         return self.matrix
@@ -148,7 +149,8 @@ class MatrixFactorization:
 
     def getRecommendations(self, target_user_idx):
         nR = self.R
-        predictUserRating = list(nR[target_user_idx-1])
+        user_idx = self.findMovieIndex(self.users, target_user_idx)
+        predictUserRating = list(nR[user_idx])
         movies_idx = sorted(self.movies["movieId"].tolist())
         unseenMovies = self.findUnseenMoviesByUser(target_user_idx)
         recommendations = []

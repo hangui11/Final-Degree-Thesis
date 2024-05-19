@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     # Ratings data
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
     
     # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         print(' Similarity with kNN hybrid recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     knnDF = pd.DataFrame(knnSim, columns=['userId', 'knnSim'])
-    path = knn_dir + '/knnSim.csv'
+    path = knn_dir + '/knnSimSmall_Small.csv'
     knnDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

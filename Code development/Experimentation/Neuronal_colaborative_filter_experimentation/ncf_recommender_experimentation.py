@@ -22,11 +22,11 @@ if __name__ == "__main__":
 
     # Ratings data
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
     
     # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
-    users_idy = list(set(ratings_train["userId"].values))
+    users_idy = sorted(list(set(ratings_train["userId"].values)))
     movies = dataset["movies.csv"]
 
     start = time.time()
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     np.random.seed(seed)
     ncfRecommender = ncf.NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, movies)
     ncfRecommender.trainingModel(lr=1e-3, wd=1e-4, max_epochs = 50, batch_size = 64,  early_stop_epoch_threshold = 5)
-    ncfRecommender.evaluateModel(ratings_val, batch_size = 64)
+    ncfRecommender.evaluateModel(ratings_val, batch_size = 64, users = users_idy)
     end = time.time()
     print('NCF MODEL Computation time: ' + str(end-start))
 
@@ -45,14 +45,14 @@ if __name__ == "__main__":
     countSim = 0
 
     for userId in users_idy:
-        ncfRecommender.predictUnseenMoviesRating(userId)
+        ncfRecommender.predictUnseenMoviesRating(userId, users_idy)
         sim = ncfRecommender.validation(ratings_val, userId)
         countSim += sim
         ncfSim.append((userId, sim))
         print(' Similarity with neuronal colaborative filter recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     ncfDF = pd.DataFrame(ncfSim, columns=['userId', 'ncfSim'])
-    path = ncf_dir + '/ncfSim.csv'
+    path = ncf_dir + '/ncfSimSmall_Small.csv'
     ncfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)

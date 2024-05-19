@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     # Ratings data
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
     
     # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         print(' Similarity with matrix factorization recommender for user: '+ str(userId) + ' is ' + str(sim))
 
     mfDF = pd.DataFrame(mfSim, columns=['userId', 'mfSim'])
-    path = mf_dir + '/mfSim.csv'
+    path = mf_dir + '/mfSimSmall_Small.csv'
     mfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)
