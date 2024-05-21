@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from matplotlib.lines import Line2D
 
 current_dir = os.path.dirname(os.path.abspath("__file__"))
 code_development_dir = os.path.dirname(current_dir)
@@ -84,8 +85,23 @@ if __name__ == "__main__":
 
     methods = ['trivial', 'user', 'item', 'knn', 'mf', 'ncf']
     methodsSim = [trivialCount, userCount, itemCount, knnCount, mfCount, ncfCount]
-    plt.figure(figsize=(7,5))
-    plt.bar(methods, methodsSim)
+    color = ['red', 'green', 'red', 'blue', 'blue', 'blue']
+    
+    plt.figure(figsize=(12,8))
+    plt.bar(methods, methodsSim, color=color)
+
+    # Method 1: Line2D
+    # legend_elements = [Line2D([0], [0], color='red', lw=4, label='Item-based model'),
+    #                Line2D([0], [0], color='green', lw=4, label='User-based model'),
+    #                Line2D([0], [0], color='blue', lw=4, label='Hybrid model')]
+    # plt.legend(handles=legend_elements, loc='upper right')
+
+    # Method 2: Rectangle
+    colors = {'Item-based model':'red', 'User-based model': 'green', 'Hybrid model': 'blue'}
+    labels = list(colors.keys())
+    handles = [plt.Rectangle((0,0), 1,1, color=colors[label]) for label in labels]
+    plt.legend(handles, labels, loc='upper right', prop={"size": 10})
+
     plt.xlabel('METHODS')
     plt.ylabel('USERS COUNTER')
     plt.title('COMPARISION OF ACCURACY FOR DIFFERENT METHODS')
