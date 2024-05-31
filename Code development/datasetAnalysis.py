@@ -11,7 +11,7 @@ if __name__ == "__main__":
     movies = dataset['movies.csv']
     ratings = dataset['ratings.csv']
 
-    
+    # Analyze the ratings dataset 
     print('Sneak peak into the ratings dataset:\n\n', ratings.head(), '\n')
     print('Number of ratings: ', ratings.shape[0])
     print('Numver of users: ', ratings['userId'].unique().shape[0])
@@ -24,6 +24,7 @@ if __name__ == "__main__":
     print('Sneak peak into the movies dataset:\n\n', movies.head(), '\n')
     print('Number of movies: ', movies.shape[0])
 
+    # Compute the sparsity of the interaction matrix
     print('\n==========================================\n')
     interaction_matrix_size = ratings['userId'].nunique() * ratings['movieId'].nunique()
     interaction_count = ratings.shape[0]
@@ -31,6 +32,7 @@ if __name__ == "__main__":
     print('Sparsity of the interaction matrix: ', sparsity)
     print('\n==========================================\n')
 
+    # Analyze the movie and rating datasets
     ratings_expanded = pd.merge(ratings, movies, on='movieId', how='inner')
     ratings_stats = pd.DataFrame(ratings_expanded.groupby('title')['rating'].mean())
     ratings_stats['rating_count'] = pd.DataFrame(ratings_expanded.groupby('title').count()['rating'])

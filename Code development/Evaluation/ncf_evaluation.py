@@ -7,6 +7,9 @@ current_dir = os.path.dirname(os.path.abspath("__file__"))
 code_development_dir = os.path.dirname(current_dir)
 ncf_dir = os.path.join(code_development_dir, "Experimentation/Neuronal_colaborative_filter_experimentation")
 
+'''
+Load the different versions of the ncf model from CSV files
+'''
 def read_csv(path):
     df = pd.read_csv(path)
     return df
@@ -15,6 +18,7 @@ if __name__ == "__main__":
     # Set the random seed for reproducibility
     np.random.seed(8)
 
+    # Load the different versions of the ncf model
     ncfPath = ncf_dir + '/ncfSim_v'
 
     ncfSim1 = pd.read_csv(ncfPath+'1.csv')
@@ -35,8 +39,10 @@ if __name__ == "__main__":
     ncfSim6 = pd.read_csv(ncfPath+'6.csv')
     ncf6 = ncfSim6['ncfSim'].values.tolist()
 
+    # Get the number of users
     users = len(ncfSim1)
 
+    # For each version, count the number of users that have the highest similarity compared to the others versions
     ncfCount1, ncfCount2, ncfCount3, ncfCount4, ncfCount5, ncfCount6 = 0, 0, 0, 0, 0, 0
     for i in range(users):
         maxSim = max(ncf1[i], ncf2[i], ncf3[i], ncf4[i], ncf5[i], ncf6[i])
@@ -55,6 +61,10 @@ if __name__ == "__main__":
     plt.savefig('../Images/number_users_ncf.png')
     plt.show()
 
+
+    ########################################################################
+
+    # Get the similarities for the random users
     n = 5
     X_axis = np.arange(n) 
     width = 0.7
@@ -67,6 +77,7 @@ if __name__ == "__main__":
     ncfUsersSim5 = ncfSim5.loc[ncfSim5['userId'].isin(randomUsers)]['ncfSim'].values.tolist()
     ncfUsersSim6 = ncfSim6.loc[ncfSim6['userId'].isin(randomUsers)]['ncfSim'].values.tolist()
 
+    # Plot the similarities of different versions for the random users
     plt.figure(figsize=(12,8))
     plt.bar(X_axis-0.3, ncfUsersSim1, width/7, label='v1')
     plt.bar(X_axis-0.2, ncfUsersSim2, width/7, label='v2')
@@ -81,7 +92,8 @@ if __name__ == "__main__":
     plt.ylabel('SIMILARITY')
     plt.savefig('../Images/ncf_random_users.png', dpi=100)
 
-    accuracyPath = r"C:\Users\usuario\Desktop\FIB\Final-Degree-Thesis\Code development\Experimentation\Neuronal_colaborative_filter_experimentation\versionAccuracy.csv"
+    # Plot the accuracy for each version, which the accuracies is obtained from RMSE algorithm
+    accuracyPath = ncf_dir + "/versionAccuracy.csv"
     accuracy = pd.read_csv(accuracyPath)
     accuracy = accuracy['accuracy'].values.tolist()
     plt.figure()

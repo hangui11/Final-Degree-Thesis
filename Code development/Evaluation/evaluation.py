@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # Set the random seed for reproducibility
     np.random.seed(123456)
 
-    # Load the dataset
+    # Load the CSV files that the results obtained from the experimentation of differents models
     trivialPath = experimentation_dir + "/Trivial_experimentation/trivialSim.csv"
     trivialSim = pd.read_csv(trivialPath)
     trivial = trivialSim['trivialSim'].values.tolist()
@@ -37,12 +37,16 @@ if __name__ == "__main__":
     ncfSim = pd.read_csv(ncfPath)
     ncf = ncfSim['ncfSim'].values.tolist()
 
+    # Get all number of users
     users = len(trivialSim)
+
+    # Set five random users
     n = 5
     X_axis = np.arange(n) 
     width = 0.6
     randomUsers = [np.random.randint(0, users) for i in range(n)]
     
+    # Get the similarities for the random users
     trivialUsersSim = trivialSim.loc[trivialSim['userId'].isin(randomUsers)]['trivialSim'].values.tolist()
     userUsersSim = userSim.loc[userSim['userId'].isin(randomUsers)]['userSim'].values.tolist()
     itemUsersSim = itemSim.loc[itemSim['userId'].isin(randomUsers)]['itemSim'].values.tolist()
@@ -50,6 +54,7 @@ if __name__ == "__main__":
     mfUsersSim = mfSim.loc[mfSim['userId'].isin(randomUsers)]['mfSim'].values.tolist()
     ncfUsersSim = ncfSim.loc[ncfSim['userId'].isin(randomUsers)]['ncfSim'].values.tolist()
 
+    # Plot the similarities of different models for the random users
     plt.figure(figsize=(12,8))
     plt.bar(X_axis-0.3, trivialUsersSim, width/6, label='trivial')
     plt.bar(X_axis-0.2, userUsersSim, width/6, label='user')
@@ -65,6 +70,9 @@ if __name__ == "__main__":
     plt.savefig('../Images/random_users.png', dpi=100)
     
     ############################################################################
+    
+    # For each model, count the number of users that have the best similarity compared to the others models
+    # And plot the results
 
     trivialCount = 0
     userCount = 0
@@ -83,6 +91,7 @@ if __name__ == "__main__":
         if (maxSim == mf[i]): mfCount += 1
         if (maxSim == ncf[i]): ncfCount += 1
 
+    # Set three colours for the different metrics of the models
     methods = ['trivial', 'user', 'item', 'knn', 'mf', 'ncf']
     methodsSim = [trivialCount, userCount, itemCount, knnCount, mfCount, ncfCount]
     color = ['red', 'green', 'red', 'blue', 'blue', 'blue']

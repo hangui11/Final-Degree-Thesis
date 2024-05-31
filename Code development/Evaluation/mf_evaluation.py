@@ -7,6 +7,9 @@ current_dir = os.path.dirname(os.path.abspath("__file__"))
 code_development_dir = os.path.dirname(current_dir)
 mf_dir = os.path.join(code_development_dir, "Experimentation/Matrix_factorization_experimentation")
 
+'''
+Load the different versions of the mf model from CSV files
+'''
 def read_csv(path):
     df = pd.read_csv(path)
     return df
@@ -36,9 +39,10 @@ if __name__ == "__main__":
     mfSim6 = pd.read_csv(mfPath+'6.csv')
     mf6 = mfSim6['mfSim'].values.tolist()
 
-
+    # Get the number of users
     users = len(mfSim1)
     
+     # For each version, count the number of users that have the highest similarity compared to the others versions
     mfCount1, mfCount2, mfCount3, mfCount4, mfCount5, mfCount6 = 0, 0, 0, 0, 0, 0, 
     for i in range(users):
         maxSim = max(mf1[i], mf2[i], mf3[i], mf4[i])
@@ -58,6 +62,10 @@ if __name__ == "__main__":
     plt.savefig('../Images/number_users_mf.png')
     plt.show()
 
+
+    ################################################################################################
+
+    # Get the similarities for the random users
     n = 5
     X_axis = np.arange(n) 
     width = 0.6
@@ -70,6 +78,7 @@ if __name__ == "__main__":
     mfUsersSim5 = mfSim5.loc[mfSim5['userId'].isin(randomUsers)]['mfSim'].values.tolist()
     mfUsersSim6 = mfSim6.loc[mfSim6['userId'].isin(randomUsers)]['mfSim'].values.tolist()
 
+    # Plot the similarities of different versions for the random users
     plt.figure(figsize=(12,8))
     plt.bar(X_axis-0.3, mfUsersSim1, width/6, label='v1')
     plt.bar(X_axis-0.2, mfUsersSim2, width/6, label='v2')

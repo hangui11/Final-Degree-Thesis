@@ -11,31 +11,29 @@ sys.path.append(code_development_dir)
 from utils import *
 
 '''
-Intentamos siempre de actualizar cada valor de latente (K) de P i Q para prevenir de mejor manera el modelo, en este capítulo usamos el descenso de gradiente para
-computar y prevenir el nuestro modelo, que es rating prediction
+Always need to try update each latent (K) value of P and Q to better predict the model, in this script we use gradient descent to compute and predict the model.
 
-El descenso de gradiente se usa frecuentemente como algoritmo de optimización en el campo de ML para aprender los factores latentes de los usuarios y elementos. 
-Alpha (λ) y beta (β) son parámetros de regularización comúnmente utilizados en el descenso de gradiente para prevenir el sobreajuste y mejorar la capacidad de
-generalización del modelo. Es un modelo muy básico comparado con otros más complejos, ya que converja con menos rendimiento, pero no podemos afirmar que tiene un menor
-precisión que los otros (Adam, RMSProp, AdaGRAD). En nuestro caso, estamos usanto un stochastic gradient descent.
+Gradient descent is frequently used as an optimization algorithm in the ML field to learn the latent factors of users and elements. 
+Alpha (λ) and beta (β) are regularization parameters commonly used in gradient descent to prevent overfitting and improve the ability of generalization of the model.
+It is a very basic model compared to other more complex ones, as it converges with less performance, but we cannot claim that it has a lower accuracy than the others
+(Adam, RMSProp, AdaGRAD). In our case, we are using a stochastic gradient descent.
 
-Alpha (α): Es la tasa de aprendizaje, un hiperparámetro que controla el tamaño de los pasos que se dan en cada iteración durante el proceso de optimización.
-Una tasa de aprendizaje más alta puede hacer que el algoritmo converja más rápido, pero también puede provocar oscilaciones o divergencia en la convergencia.
-Por otro lado, una tasa de aprendizaje baja puede llevar a una convergencia más lenta, pero puede ser más estable.
+Alpha (α): This is the learning rate, a hyperparameter that controls the size of the steps taken in each iteration during the optimization process.
+A higher learning rate can make the algorithm converge faster, but it can also lead to oscillations or divergence in convergence. On the other hand,
+a low learning rate may lead to slower convergence, but may be more stable.
 
-Beta (β): Es el parámetro de regularización, que controla la fuerza de la regularización aplicada a los parámetros del modelo para evitar el sobreajuste.
-La regularización L2, que se utiliza aquí, agrega un término de penalización a la función de pérdida que penaliza los valores grandes de los parámetros del
-modelo. Un valor más alto de beta aumenta la fuerza de la regularización, lo que puede ayudar a prevenir el sobreajuste, pero también puede hacer que el modelo
-sea demasiado conservador.
+Beta (β): This is the regularization parameter, which controls the strength of the regularization applied to the model parameters to avoid overfitting.
+The L2 regularization, which is used here, adds a penalty term to the loss function that penalizes large values of the model parameters.
+model. A higher value of beta increases the strength of the regularization, which can help prevent overfitting, but it can also make the model
+too conservative.
 
-Momentum: Es un hiperparámetro que controla la influencia del momento y suavizar las actualizaciones de los parámetros del modelo durante el entrenamiento. Este
-término de momentum se calcula multiplicando el gradiente actual por un valor de momentum y sumándolo al cambio acumulado de los parámetros en pasos anteriores,
-que almacena en una variable de velocidad (velocity).
+Momentum: It is a hyperparameter that controls the influence of the momentum and smooth the updates of the model parameters during training. This
+momentum term is calculated by multiplying the current gradient by a momentum value and adding it to the cumulative change of the parameters 
+in previous steps, which it stores in a velocity variable.
 
-La regularización L2 se utiliza para evitar el sobreajuste durante el entrenamiento del modelo.
-En resumen, el término de regularización (β) ayuda a controlar la complejidad del modelo y a prevenir el sobreajuste al penalizar los valores grandes
-de los parámetros del modelo durante el entrenamiento del algoritmo de factorización de matrices. Esto conduce a un modelo que generaliza mejor a datos
-no vistos y que es menos propenso al sobreajuste.
+The L2 regularization is used to avoid over-fitting during model training.
+In summary, the regularization term (β) helps to control the complexity of the model and prevent overfitting by penalizing large valuesof the model parameters
+during training of the matrix factorization algorithm. This leads to a model that generalizes better to unseen data and is less prone to overfitting.
 
 Regularization Term= β/2 ∑k=1 (P[i][k]^2 + Q[k][j]^2)
 
@@ -43,6 +41,15 @@ Regularization Term= β/2 ∑k=1 (P[i][k]^2 + Q[k][j]^2)
 
 
 class MatrixFactorization:
+    '''
+    This method initializes the MatrixFactorization class with the necessary data and parameters,
+    preparing it for the KNN hybrid algorithm.
+     - self.topK: Stores the number of top recommendations to be generated
+     - self.movies: Stores a dataframe with the movies information
+     - self.users: Stores a list with the user IDs
+     - self.ratings: Stores a dataframe with the ratings information
+     - self.featureSize: Stores the number of latent features to be used in the model
+    '''
     def __init__(self, ratings_train, movies, users_idy, k=5, featureSize=8) -> None:
         self.movies = movies
         self.users = sorted(users_idy)
@@ -50,11 +57,17 @@ class MatrixFactorization:
         self.ratings = ratings_train
         self.featureSize = featureSize
          
-    def findMovieIndex(self, moviesList, value):
+    '''
+    This function finds the index of an element in its list
+    '''
+    def findListIndex(self, moviesList, value):
         for i in range(len(moviesList)):
             if (moviesList[i] == value): return i
         return -1
 
+    '''
+    This method finds the unseen movies for a given user
+    '''
     def findUnseenMoviesByUser(self, target_user_idx):
         ratings = self.ratings
         movies = self.movies['movieId']
@@ -66,31 +79,39 @@ class MatrixFactorization:
 
         return unseenMovies
 
+    '''
+    This method generates a matrix of users and movies interactions, which some value of rating will be 0
+    if the user has not rated the movie.
+    '''
     def generate_users_items_matrix(self):
         movies = sorted(self.movies["movieId"].tolist())
         ratings = self.ratings
+        # Generate a empty matrix of users and movies interactions
         m = [[0 for i in range(len(movies))] for j in range(len(self.users))]
         for i in self.users:
+            # Find all movies rated by the user
             ratingsUser = ratings.loc[(ratings['userId'] == i)]
             data = ratingsUser[['movieId', 'rating']].values.tolist()
 
             for j in data:
-                index = self.findMovieIndex(movies, j[0])
-                userIdx = self.findMovieIndex(self.users, i)
+                index = self.findListIndex(movies, j[0])
+                userIdx = self.findListIndex(self.users, i)
                 m[userIdx][index] = (j[1])
 
         self.matrix = np.array(m)
         return self.matrix
 
+    '''
+    This method compute the matrix factorization model using gradient descent with momentum algorithm
+    '''
     def matrix_factorization(self, iterations=10000, alpha=0.0002, beta=0.2, momentum=0.9):
         self.matrix = self.generate_users_items_matrix()
         R = self.matrix
 
-         # NUMBER OF USERS AND NUMBER OF ITEMS
+         # Number of users and items
         row, column = R.shape
         # Generate user feature and item feature
-        K = self.featureSize
-        
+        K = self.featureSize        
         # P = np.random.rand(row, K)
         # Q = np.random.rand(K, column)
 
@@ -98,23 +119,22 @@ class MatrixFactorization:
         P = np.random.normal(3, 2, size=(row, K))
         Q = np.random.normal(3, 2, size=(K, column))
         
-        # Igual que la matriz P inicializado con todos los valores a 0
+        # Same as matrix P initialized all values set to 0
         velocity_P = np.zeros_like(P)
-        # Igual que la matriz Q inicializado con todos los valores a 0
+        # Same as matrix Q initialized all values set to 0
         velocity_Q = np.zeros_like(Q)
 
         loss_previous = math.inf
         print('Start the MF MODEL computation .....')
         for iteration in range(iterations):
-            # Error total del modelo
+            # Total error of the model in the previous iteration
             e = R - np.dot(P, Q)
             
-            # Calcular los gradientes para P
+            # Compute the gradient of the matrix P and Q using the previous error and beta values to regularize the model
             gradient_P = 2*np.dot(e, Q.T) - beta * P
-            # Calcular los gradientes para Q
             gradient_Q = 2*np.dot(P.T, e) - beta * Q
 
-            # Normalización z-score de los gradientes
+            # Normalize the gradients to avoid the explosion of the gradients
             mean_gradient_P = np.mean(gradient_P)
             std_gradient_P = np.std(gradient_P)
             normalized_gradient_P = (gradient_P - mean_gradient_P) / std_gradient_P
@@ -123,16 +143,18 @@ class MatrixFactorization:
             std_gradient_Q = np.std(gradient_Q)
             normalized_gradient_Q = (gradient_Q - mean_gradient_Q) / std_gradient_Q
             
-            ## Uso de momentum para convergir más rápido
+            # Using momentum to accelerate the updates of the model parameters (P and Q)
             velocity_P = velocity_P * momentum + alpha * normalized_gradient_P
             velocity_Q = velocity_Q * momentum + alpha * normalized_gradient_Q
 
             P += velocity_P
             Q += velocity_Q
             
+            # Check for NaN values in the model parameters and replace them with 0
             P = np.nan_to_num(P)
             Q = np.nan_to_num(Q)
             
+            # Compute the total error of the model using the regularization term (beta)
             loss = np.sum(e ** 2)/len(e) + (beta/2) * (np.sum(P ** 2) + np.sum(Q ** 2))
             if loss < 0.001:
                 break
@@ -147,28 +169,38 @@ class MatrixFactorization:
         self.R = np.dot(self.P, self.Q)
         return P, Q
 
+    '''
+    This method generates the recommendations for a given user
+    '''
     def getRecommendations(self, target_user_idx):
         nR = self.R
-        user_idx = self.findMovieIndex(self.users, target_user_idx)
+        user_idx = self.findListIndex(self.users, target_user_idx)
         predictUserRating = list(nR[user_idx])
         movies_idx = sorted(self.movies["movieId"].tolist())
         unseenMovies = self.findUnseenMoviesByUser(target_user_idx)
+
         recommendations = []
-        
         for i in unseenMovies:
-            idx = self.findMovieIndex(movies_idx, i)
+            idx = self.findListIndex(movies_idx, i)
             recommendations.append((i, predictUserRating[idx]))
-            
+
+        # Sort recommendations in descending order
         recommendations = sorted(recommendations, key=lambda x:x[1], reverse=True)
         self.recommendations = recommendations
-        
         return recommendations
     
+    '''
+    This function prints the top recommendations generated by the matrix factorization model
+    '''
     def printTopRecommendations(self):
         for recomendation in self.recommendations[:self.topK]:
             rec_movie = self.movies[self.movies["movieId"]  == recomendation[0]]
             print (" Recomendation: Movie:{} (Genre: {})".format(rec_movie["title"].values[0], rec_movie["genres"].values[0]))
 
+    '''
+    Method to compute the similarity between predictions and the validation dataset,
+    which is the same as the similarity between the validation movies genres and the recommended movies genres
+    '''
     def validation(self, ratings_val, target_user_idx):
         # Validation
         matrixmpa_genres, validationMoviesGenress = validationMoviesGenres(self.movies, ratings_val, target_user_idx)
@@ -176,7 +208,7 @@ class MatrixFactorization:
         topMoviesUser = list(list(zip(*self.recommendations[:self.topK]))[0])
         recommendsMoviesUser = matrixmpa_genres.loc[topMoviesUser]
         
-        # sim entre matriu genere amb recomanador user
+        # Compute the similarity between the validation movies genres and the recommended movies genres
         sim = cosinuSimilarity(validationMoviesGenress, recommendsMoviesUser)
         # print(' Similarity with matrix factorization recommender: ' + str(sim))
         return sim

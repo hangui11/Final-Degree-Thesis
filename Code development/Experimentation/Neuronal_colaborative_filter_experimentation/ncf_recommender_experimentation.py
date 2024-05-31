@@ -20,11 +20,10 @@ if __name__ == "__main__":
     path_to_ml_latest_small = './ml-latest-small/'
     dataset = load_dataset_from_source(path_to_ml_latest_small)
 
-    # Ratings data
+    # Split the dataset into training and validation set
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
     
-    # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
     users_idy = sorted(list(set(ratings_train["userId"].values)))
     movies = dataset["movies.csv"]
@@ -32,11 +31,16 @@ if __name__ == "__main__":
     start = time.time()
     print("Start the prediction of neuronal colaborative filter based recommender ...")
 
+    # Set the random seed for reproducibility
     seed = 9101307
     torch.manual_seed(seed)
     np.random.seed(seed)
+
+    # Create the neuronal colaborative filter based recommender model
     ncfRecommender = ncf.NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, movies)
+    # Train the model
     ncfRecommender.trainingModel(lr=1e-3, wd=1e-4, max_epochs = 50, batch_size = 64,  early_stop_epoch_threshold = 5)
+    # Evaluate the model
     ncfRecommender.evaluateModel(ratings_val, batch_size = 64, users = users_idy)
     end = time.time()
     print('NCF MODEL Computation time: ' + str(end-start))
@@ -44,6 +48,7 @@ if __name__ == "__main__":
     ncfSim = []
     countSim = 0
 
+    # Make the prediction of the neuronal collaborative filtering based recommender for each user in the validation set
     for userId in users_idy:
         ncfRecommender.predictUnseenMoviesRating(userId, users_idy)
         sim = ncfRecommender.validation(ratings_val, userId)
@@ -51,8 +56,9 @@ if __name__ == "__main__":
         ncfSim.append((userId, sim))
         print(' Similarity with neuronal colaborative filter recommender for user: '+ str(userId) + ' is ' + str(sim))
 
+    # Save the similarity of each user with the neuronal collaborative filtering based recommender in a csv file
     ncfDF = pd.DataFrame(ncfSim, columns=['userId', 'ncfSim'])
-    path = ncf_dir + '/ncfSimSmall_Small.csv'
+    path = ncf_dir + '/ncfSim.csv'
     ncfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)

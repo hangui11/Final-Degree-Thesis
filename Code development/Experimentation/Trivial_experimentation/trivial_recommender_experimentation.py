@@ -18,11 +18,10 @@ if __name__ == "__main__":
     path_to_ml_latest_small = './ml-latest-small/'
     dataset = load_dataset_from_source(path_to_ml_latest_small)
 
-    # Ratings data
+    # Split the dataset into training and validation set
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
     
-    # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
     users_idy = list(set(ratings_train["userId"].values))
     movies = dataset["movies.csv"]
@@ -30,11 +29,14 @@ if __name__ == "__main__":
     start = time.time()
     print("Start the prediction of trivial based recommender ...")
 
+    # Create the trivial recommender
     trivialRecommender = trivial.Trivial(ratings_train, movies)
+    # Compute the recommendations
     trivialRecommender.trivial_recommender()
     trivialSim = []
     countSim = 0
     
+    # Make the prediction of the trivial recommender for each user in the validation set
     for userId in users_idy:
         sim = trivialRecommender.validation(ratings_val, userId)
         countSim += sim
@@ -43,8 +45,9 @@ if __name__ == "__main__":
 
         print(' Similarity with trivial recommender for user: '+ str(userId) + ' is ' + str(sim))
 
+    # Save the similarity of each user with the trivial recommender in a csv file
     trivialDF = pd.DataFrame(trivialSim, columns=['userId', 'trivialSim'])
-    path = trivial_dir + '/trivialSimSmall_Small.csv'
+    path = trivial_dir + '/trivialSim.csv'
     trivialDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

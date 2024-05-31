@@ -18,11 +18,10 @@ if __name__ == "__main__":
     path_to_ml_latest_small = './ml-latest-small/'
     dataset = load_dataset_from_source(path_to_ml_latest_small)
 
-    # Ratings data
+    # Split the dataset into training and validation set
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
     
-    # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
     users_idy = list(set(ratings_train["userId"].values))
     movies = dataset["movies.csv"]
@@ -30,10 +29,12 @@ if __name__ == "__main__":
     start = time.time()
     print("Start the prediction of item-to-item based recommender ...")
 
+    # Create the item-to-item based recommender
     itemRecommender = item.ItemToItem(ratings_train, movies, users_idy)
     itemSim = []
     countSim = 0
 
+    # Make the prediction of the item-to-item based recommender for each user in the validation set
     for userId in users_idy:
         itemRecommender.item_based_recommender(userId)
         sim = itemRecommender.validation(ratings_val, userId)
@@ -41,8 +42,9 @@ if __name__ == "__main__":
         itemSim.append((userId, sim))
         print(' Similarity with item-to-item recommender for user: '+ str(userId) + ' is ' + str(sim))
 
+    # Save the similarity of each user with the item-to-item based recommender in a csv file
     itemDF = pd.DataFrame(itemSim, columns=['userId', 'itemSim'])
-    path = item_dir + '/itemSimSmall_Small.csv'
+    path = item_dir + '/itemSim.csv'
     itemDF.to_csv(path, index=False)
     
     countSimAverage = countSim / len(users_idy)

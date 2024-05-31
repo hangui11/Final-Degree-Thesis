@@ -71,8 +71,8 @@ Movie Ids
 Only movies with at least one rating or tag are included in the dataset. These movie ids are consistent with those used on the MovieLens web site (e.g., id `1` corresponds to the URL <https://movielens.org/movies/1>). Movie ids are consistent between `ratings.csv`, `tags.csv`, `movies.csv`, and `links.csv` (i.e., the same id refers to the same movie across these four data files).
 
 
-Ratings Data File Structure (ratings.csv)
------------------------------------------
+Ratings Data File Structure (ratings.csv, ratingsSmall.csv, ratingsSmall_Small.csv)
+-----------------------------------------------------------------------------------
 
 All ratings are contained in the file `ratings.csv`. Each line of this file after the header row represents one rating of one movie by one user, and has the following format:
 

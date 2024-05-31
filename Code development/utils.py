@@ -17,6 +17,8 @@ def load_dataset_from_source(path_to_ml_latest_small: str) -> dict:
       Returns: 
           dict: A dictionary containing the following dataframes:
               - 'ratings.csv': User ratings data
+              - 'ratingsSmall.csv': Small user ratings data
+              - 'ratingsSmall_Small.csv': Small small user ratings data
               - 'tags.csv': User-generated tags data
               - 'movies.csv': Movie information data with an additional 'year' column
               - 'links.csv': Movie links data          
@@ -89,9 +91,13 @@ def matrix_genres(movies: object) -> dict:
      
     return matrix
 
-## Calculate the cosinu similarity between two movies genres
+
+'''
+Calculate the cosinu similarity between two movies genres
+'''
 def cosinuSimilarity(validationMoviesGenres, recommendsMoviesGenres):
 
+    # Compute the TF-IDF for each movie genres set
     genres1 = toTfIdf(validationMoviesGenres)
     genres2 = toTfIdf(recommendsMoviesGenres)
 
@@ -127,7 +133,9 @@ def cosinuSimilarity(validationMoviesGenres, recommendsMoviesGenres):
     return sum/(np.sqrt(d1)*np.sqrt(d2))
 
 
-## calculate the TfIdf of movies 
+'''
+Compute the TF-IDF for a set of movie genres
+'''
 def toTfIdf(moviesGenre):
     moviesCount = moviesGenre.shape[0]
     genresTotal = moviesGenre.sum()
@@ -143,7 +151,9 @@ def toTfIdf(moviesGenre):
         else: result.append((indexs[i], values[i]))
     return result
 
-## Validation of the movies genres for the comparation with our recommenders models
+'''
+Validation of the movies genres for the comparation with recommender models
+'''
 def validationMoviesGenres(datasetMovies, ratings_val, target_user_idx):
     matrixmpa_genres = matrix_genres(datasetMovies)
     validationMovies = ratings_val['movieId'].loc[ratings_val['userId'] == target_user_idx].values.tolist()

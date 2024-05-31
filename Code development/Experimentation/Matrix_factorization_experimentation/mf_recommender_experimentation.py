@@ -19,11 +19,10 @@ if __name__ == "__main__":
     path_to_ml_latest_small = './ml-latest-small/'
     dataset = load_dataset_from_source(path_to_ml_latest_small)
 
-    # Ratings data
+    # Split the dataset into training and validation set
     val_movies = 5
-    ratings_train, ratings_val = split_users(dataset["ratingsSmall_Small.csv"], val_movies)
+    ratings_train, ratings_val = split_users(dataset["ratings.csv"], val_movies)
     
-    # Create matrix between user and movies 
     movies_idx = dataset["movies.csv"]["movieId"]
     users_idy = list(set(ratings_train["userId"].values))
     movies = dataset["movies.csv"]
@@ -31,17 +30,21 @@ if __name__ == "__main__":
     start = time.time()
     print("Start the prediction of matrix factorization based recommender ...")
 
+    # Set the random seed for reproducibility
     seed = 9101307
     np.random.seed(seed)
     
+    # Create the matrix factorization recommender
     mfRecommender = mf.MatrixFactorization(ratings_train, movies, users_idy)
+    # Train the model
     mfRecommender.matrix_factorization()
     end = time.time()
     print('MF MODEL Computation time: ' + str(end-start))
 
     mfSim = []
     countSim = 0
-    
+
+    # Make the prediction of the matrix factorization based recommender for each user in the validation set
     for userId in users_idy:
         mfRecommender.getRecommendations(userId)
         sim = mfRecommender.validation(ratings_val, userId)
@@ -49,8 +52,9 @@ if __name__ == "__main__":
         mfSim.append((userId, sim))
         print(' Similarity with matrix factorization recommender for user: '+ str(userId) + ' is ' + str(sim))
 
+    # Save the similarity of each user with the matrix factorization based recommender in a csv file
     mfDF = pd.DataFrame(mfSim, columns=['userId', 'mfSim'])
-    path = mf_dir + '/mfSimSmall_Small.csv'
+    path = mf_dir + '/mfSim.csv'
     mfDF.to_csv(path, index=False)
         
     countSimAverage = countSim / len(users_idy)
