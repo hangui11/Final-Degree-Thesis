@@ -52,12 +52,12 @@ if __name__ == "__main__":
         if (ncf4[i] == maxSim): ncfCount4 += 1
         if (ncf5[i] == maxSim): ncfCount5 += 1
         if (ncf6[i] == maxSim): ncfCount6 += 1
-    version = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6']
+    version = ['config1', 'config2', 'config3', 'config4', 'config5', 'config6']
     versionSim = [ncfCount1, ncfCount2, ncfCount3, ncfCount4, ncfCount5, ncfCount6]
     plt.bar(version, versionSim)
-    plt.xlabel('VERSIONS')
+    plt.xlabel('CONFIGURATIONS')
     plt.ylabel('NUMBER OF USERS')
-    plt.title('NUMBER OF USERS WITH DIFFERENT VERSIONS')
+    plt.title('NUMBER OF USERS WITH DIFFERENT CONFIGURATIONS')
     plt.savefig('../Images/number_users_ncf.png')
     plt.show()
 
@@ -79,16 +79,16 @@ if __name__ == "__main__":
 
     # Plot the similarities of different versions for the random users
     plt.figure(figsize=(12,8))
-    plt.bar(X_axis-0.3, ncfUsersSim1, width/7, label='v1')
-    plt.bar(X_axis-0.2, ncfUsersSim2, width/7, label='v2')
-    plt.bar(X_axis-0.1, ncfUsersSim3, width/7, label='v3')
-    plt.bar(X_axis+0, ncfUsersSim4, width/7, label='v4')
-    plt.bar(X_axis+0.1, ncfUsersSim5, width/7, label='v5')
-    plt.bar(X_axis+0.2, ncfUsersSim6, width/7, label='v6')
+    plt.bar(X_axis-0.3, ncfUsersSim1, width/7, label='config1')
+    plt.bar(X_axis-0.2, ncfUsersSim2, width/7, label='config2')
+    plt.bar(X_axis-0.1, ncfUsersSim3, width/7, label='config3')
+    plt.bar(X_axis+0, ncfUsersSim4, width/7, label='config4')
+    plt.bar(X_axis+0.1, ncfUsersSim5, width/7, label='config5')
+    plt.bar(X_axis+0.2, ncfUsersSim6, width/7, label='config6')
     plt.xticks(X_axis, randomUsers)
-    plt.legend(loc='upper right', prop={"size": 10})
+    plt.legend(loc='upper right', prop={"size": 8})
     plt.title('DIFFERENT SIMILARITY FOR RANDOM USERS')
-    plt.xlabel('VERSION OF NCF')
+    plt.xlabel('USER ID')
     plt.ylabel('SIMILARITY')
     plt.savefig('../Images/ncf_random_users.png', dpi=100)
 
@@ -99,9 +99,9 @@ if __name__ == "__main__":
     plt.figure()
     plt.cla()
     plt.bar(version, accuracy)
-    plt.xlabel('VERSIONS')
+    plt.xlabel('CONFIGURATIONS')
     plt.ylabel('ACCURACY')
-    plt.title('ACCURACY FOR DIFFERENT VERSIONS')
+    plt.title('ACCURACY FOR DIFFERENT CONFIGURATIONS')
     
     plt.savefig('../Images/accuracy_ncf.png')
     plt.show()

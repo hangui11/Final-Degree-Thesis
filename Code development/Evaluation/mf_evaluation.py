@@ -53,12 +53,12 @@ if __name__ == "__main__":
         if maxSim == mf5[i]: mfCount5 += 1
         if maxSim == mf6[i]: mfCount6 += 1
 
-    version = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6']
+    version = ['config1', 'config2', 'config3', 'config4', 'config5', 'config6']
     versionSim = [mfCount1, mfCount2, mfCount3, mfCount4, mfCount5, mfCount6]
     plt.bar(version, versionSim)
-    plt.xlabel('VERSIONS')
+    plt.xlabel('CONFIGURATIONS')
     plt.ylabel('NUMBER OF USERS')
-    plt.title('NUMBER OF USERS WITH DIFFERENT VERSIONS')
+    plt.title('NUMBER OF USERS WITH DIFFERENT CONFIGURATIONS')
     plt.savefig('../Images/number_users_mf.png')
     plt.show()
 
@@ -80,16 +80,16 @@ if __name__ == "__main__":
 
     # Plot the similarities of different versions for the random users
     plt.figure(figsize=(12,8))
-    plt.bar(X_axis-0.3, mfUsersSim1, width/6, label='v1')
-    plt.bar(X_axis-0.2, mfUsersSim2, width/6, label='v2')
-    plt.bar(X_axis-0.1, mfUsersSim3, width/6, label='v3')
-    plt.bar(X_axis+0, mfUsersSim4, width/6, label='v4')
-    plt.bar(X_axis+0.1, mfUsersSim5, width/6, label='v5')
-    plt.bar(X_axis+0.2, mfUsersSim6, width/6, label='v6')
+    plt.bar(X_axis-0.3, mfUsersSim1, width/6, label='config1')
+    plt.bar(X_axis-0.2, mfUsersSim2, width/6, label='config2')
+    plt.bar(X_axis-0.1, mfUsersSim3, width/6, label='config3')
+    plt.bar(X_axis+0, mfUsersSim4, width/6, label='config4')
+    plt.bar(X_axis+0.1, mfUsersSim5, width/6, label='config5')
+    plt.bar(X_axis+0.2, mfUsersSim6, width/6, label='config6')
     plt.xticks(X_axis, randomUsers)
-    plt.legend(loc='upper right', prop={"size": 10})
+    plt.legend(loc='upper right', prop={"size": 8})
     plt.title('DIFFERENT SIMILARITY FOR RANDOM USERS')
-    plt.xlabel('VERSION OF MF')
+    plt.xlabel('USERS ID')
     plt.ylabel('SIMILARITY')
     plt.savefig('../Images/mf_random_users.png', dpi=100)
 
