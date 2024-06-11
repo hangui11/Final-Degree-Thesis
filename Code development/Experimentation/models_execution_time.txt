@@ -1,0 +1,13 @@
+Execution time of models
+------------------------
+
+Trivial based recommender: 1240.41 seconds
+User based recommender: 4110.48 seconds
+Item based recommender: 13462.84 seconds
+kNN hybrid based recommender: 15668.54 seconds
+MF based recommender:
+    - Training model time: 850.68 seconds
+    - Total execution time: 3158.54 seconds
+NCF based recommender:
+    - Training model time: 400.55 seconds
+    - Total execution time: 10442.32 seconds

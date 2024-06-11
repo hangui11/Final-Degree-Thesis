@@ -4,17 +4,17 @@ This file contains all methods of recommender systems in the form of class, whic
 
 The following files contain the class version of each recommender systems:
 
-- **Item_based_recommender**: This file contains the class version of item-based recommender system.
+- **Item_based_recommender**: This file contains the class version of item-based recommender system and a pseudocode of the algorithm.
 
-- **kNN_hybrid_based_recommender**: This file contains the class version of kNN-hybrid recommender system.
+- **kNN_hybrid_based_recommender**: This file contains the class version of kNN-hybrid recommender system and a pseudocode of the algorithm.
 
-- **Matrix_factorization_based_recommender**: This file contains the class version of matrix factorization recommender system.
+- **Matrix_factorization_based_recommender**: This file contains the class version of matrix factorization recommender system and a pseudocode of the algorithm.
 
-- **Neuronal_colaborative_filter_based_recommender**: This file contains the class version of neuronal collaborative filter recommender system.
+- **Neuronal_colaborative_filter_based_recommender**: This file contains the class version of neuronal collaborative filter recommender system and a pseudocode of the algorithm.
 
-- **Trivial_based_recommender**: This file contains the class version of trivial recommender system.
+- **Trivial_based_recommender**: This file contains the class version of trivial recommender system and a pseudocode of the algorithm.
 
-- **User_based_recommender**: This file contains the class version of user-based recommender system.
+- **User_based_recommender**: This file contains the class version of user-based recommender system and a pseudocode of the algorithm.
 
 To execute the script, it's necessary get into the directory of the file and run the following command:
 

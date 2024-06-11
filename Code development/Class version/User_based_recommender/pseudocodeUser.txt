@@ -1,0 +1,50 @@
+Class UserToUserRecommender
+    # Initialize the necessary parameters 
+    function initialize(ratings_train, users, movies, k=5) -> None
+        self.ratings_train = ratings_train
+        self.users = users
+        self.movies = movies
+        self.topK = k
+        self.matrix = generate_users_matrix()
+
+    # Create an user-item matrix, M[user][item]
+    function generate_users_matrix() -> dict
+        m = {}
+        for each user in users
+            userData = findUserItems(ratings_train, user)
+            m[user] = userData
+        return m
+
+    # Comparision between prediction items and real rated items
+    function validation(ratings_val, user) -> float
+        matrixGenres, validationMoviesGenres = getMatrixGenresAndValidationGenres(movies, ratings_val, user)
+        recommendMoviesGenres = getRecommendMoviesGenres(recommendations[:topK], matrixGenres)
+        similarity = cosineSimilarity(validationMoviesGenres, recommendMoviesGenres)
+        return similarity
+
+    # The prediction of items with user to user model using user similarities
+    function user_based_recommender(userIdx) -> list
+        usersRatingMean = calculateRatingMean()
+        
+        similarityUsers = {}
+        for each userId, userItems in matrix
+            if userId != userIdx
+                sim = pearsonSimilarity(userIdx, userId, usersRatingMean)
+                similarityUsers[userId] = sim
+        similarityUsers = normalize(similarityUsers)
+
+        recommendations = []
+        unseenMovies = findUnseenMovieForUser(userIdx, ratings_train)
+        for each unseenMovie in unseenMovies
+            interest = 0
+            for each userId, userItems in matrix
+                if userId != userIdx
+                    ratingMean = usersRatingMean[userId]
+                    if userId rated unseenMovie
+                        ratingMovie = findRatingMovie(unseenMovie, userId)
+                    else
+                        ratingMovie = 0
+                    interest += similarityUsers[userId] * (ratingMovie-ratingMean)
+            recommendations.append(interest)
+        recommendations = sort(recommendations)
+        return normalize(recommendations)

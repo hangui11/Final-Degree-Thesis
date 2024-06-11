@@ -1,0 +1,22 @@
+Class TrivialRecommender
+    # Initialize the necessary parameters 
+    function initialize(ratings_train, movies, k=5) -> None
+        self.ratings_train = ratings_train
+        self.movies = movies
+        self.topK = k
+        self.recommendations = trivial_recommender()
+
+    # The computation of the model using mean rate of each movie
+    function trivial_recommender() -> list
+        ratingsMean = groupbyMovie(ratings_train).mean()
+        ratingsMovies = mergeOnMovie(ratingsMean, movies)
+        sortValues = sortByRating(ratingsMovies)
+        relevantsK = sortValues(topK)
+        return toList(relevantsK)
+
+    # Comparision between prediction items and real rated items
+    function validation(ratings_val, user) -> float
+        matrixGenres, validationMoviesGenres = getMatrixGenresAndValidationGenres(movies, ratings_val, user)
+        recommendMoviesGenres = getRecommendMoviesGenres(relevantsK, matrixGenres)
+        similarity = cosineSimilarity(validationMoviesGenres, recommendMoviesGenres)
+        return similarity

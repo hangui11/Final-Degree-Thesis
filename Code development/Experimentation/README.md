@@ -16,6 +16,10 @@ The following files contains the experimetion scripts and the CSV files with the
 
 - **User_experimentation**: The file contains the experimentation for the User-based collaborative filtering model and the results are stored in the CSV files.
 
+- **models_execution_time.txt**: The file contains the execution time of the models for all users in the datasets "ratings.csv".
+
+- **pseudocodeValidation.txt**: The file contains the pseudocode of the validation process for the models.
+
 To execute the script, it's necessary get into the directory of the file and run the following command:
 
 ```

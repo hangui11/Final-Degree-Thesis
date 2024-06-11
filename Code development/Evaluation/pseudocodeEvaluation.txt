@@ -1,0 +1,17 @@
+function Main()
+    model1Sim = read_CSV(path_model1Sim)
+    model2Sim = read_CSV(path_model2Sim)
+    model3Sim = read_CSV(path_model3Sim)
+    model4Sim = read_CSV(path_model4Sim)
+    model5Sim = read_CSV(path_model5Sim)
+    
+    model1Counter = 0
+    model2Counter = 0
+    model3Counter = 0
+    model4Counter = 0
+    model5Counter = 0
+    for each user in users
+        sim = max(model1Sim[user], model2Sim[user], model3Sim[user], model4Sim[user] , model5Sim[user])
+        incrementMaxModelCounter(sim, model1Counter, model2Counter, model3Counter, model4Counter, model5Counter)
+    
+    generateComparativeGraph([model1Counter, model2Counter, model3Counter, model4Counter, model5Counter])

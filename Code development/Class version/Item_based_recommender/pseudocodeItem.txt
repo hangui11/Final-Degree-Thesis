@@ -1,0 +1,49 @@
+Class ItemToItemRecommender
+    # Initialize the necessary parameters 
+    function initialize(ratings_train, users, movies, k=5) -> None
+        self.ratings_train = ratings_train
+        self.users = users
+        self.movies = movies
+        self.topK = k
+        self.matrix = generate_items_matrix()
+
+    # Create an item-user matrix, M[item][user]
+    function generate_items_matrix() -> dict
+        m = {}
+        for each movie in movies
+            movieData = findMovieUsers(ratings_train, movie)
+            m[movie] = movieData
+
+    # Comparision between prediction items and real rated items
+    function validation(ratings_val, user) -> float
+        matrixGenres, validationMoviesGenres = getMatrixGenresAndValidationGenres(movies, ratings_val, user)
+        recommendMoviesGenres = getRecommendMoviesGenres(recommendations[:topK], matrixGenres)
+        similarity = cosineSimilarity(validationMoviesGenres, recommendMoviesGenres)
+        return similarity
+
+    # The prediction of items with item to item model using item similarities
+    function item_based_recommender(userIdx) -> list
+        moviesRatingMean = calculateRatingMean()
+        seenMovies, unseenMovies = findItemsSeenAndUnseenByUser(userIdx)
+        userRate = findUserRatingOnMovies(userIdx, seenMovies, matrix)
+
+        recommendations = []
+        for each unseenMovie in unseenMovies
+            similarityMovies = {}
+            for each seenMovie in seenMovies
+                sim = pearsonSimilarity(unseenMovie, seenMovie, moviesRatingMean)
+                similarityMovies[seenMovie] = sim
+            similarityMovies = normalize(similarityMovies)
+
+            sumRateSim = 0
+            sumSimilarities = sum(similarityMovies.values())
+            for each movie, sim in similarityMovies
+                sumRateSim += sim * userRate[movie]
+
+            if sumRateSim == 0
+                rating = 0
+            else
+                rating = sumRateSim/sumSimilarities
+            recommendations.append(rating)
+        recommendations = sort(recommendations)
+        return normalize(recommendations)

@@ -1,0 +1,144 @@
+Class DatasetBatchIterator
+    # Initialize the necessary parameters
+    function initialize(X, Y, batchSize, shuffle) -> None
+        self.X = convertArray(X)
+        self.Y = convertArray(Y)
+
+        if shuffle
+            index = randomPermutation(X)
+            X = self.X[index]
+            Y = self.Y[index]
+
+        self.batchSize = batchSize
+        self.n_batches = computeN_batches(X, batchSize)
+        self.currentBatch = 0
+
+    # Iterate over the batches of the dataset
+    function iterate() -> DatasetBatchIterator
+        return self
+    
+    # Next batch of the batch iterator
+    function next() -> tuple
+        if currentBatch >= self.n_batches
+            stopIteration()
+        k = currentBatch
+        currentBatch += 1
+        bs = batchSize
+        return X[k*bs:(k+1)*bs], Y[k*bs:(k+1)*bs]
+
+Class NeuronalCollaborativeFiltering(NeuronalNetwork)
+    # Initialize the necessary parameters
+    function initialize(user_count, item_count, ratings_train, movies, embedding_size=64, hidden_layers=(128,64,32,16), 
+                        dropout_rate=None, output_range=(1,5), k=5) -> None
+        super().initialize()
+        self.movies = movies
+        self.rating_train = rating_train
+        self.rating_x, self.rating_y = divideRating(rating_train)
+        self.topK = k
+
+        self.device = computeDevice()
+
+        self.user_hash_size = user_count
+        self.item_hash_size = item_count
+
+        self.user_embedding = NeuronalNetwork.Embedding(user_count, embedding_size)
+        self.item_embedding = NeuronalNetwork.Embedding(item_count, embedding_size)
+        
+        self.MLP = genMLP(embedding_size, hidden_layers, dropout_rate)
+
+        if dropout_rate
+            self.dropout = NeuronalNetwork.Dropout(dropout_rate)
+        
+        self.norm_min, self.norm_range = computeNorm(output_range)
+
+        init_params()
+
+    # Generate the MLP architecture
+    function genMLP(embedding_size, hidden_layers_units, dropout_rate) -> Sequential
+        hidden_layers = []
+        input_units = hidden_layers_units[0]
+        for each units in hidden_layers_units[1:]
+            hidden_layers.append(NeuronalNetwork.Linear(input_units, units))
+            hidden_layers,append(NeuronalNetwork.batchNorm(units))
+            hidden_layers.append(NeuronalNetwork.ReLU())
+            if dropout_rate
+                hidden_layers.append(NeuronalNetwork.Dropout(dropout_rate))
+            input_units = units
+        hidden_layers.append(NeuronalNetwork.Linear(input_units, 1))
+        hidden_layers.append(NeuronalNetwork.Sigmoid())
+        return Sequential(hidden_layers)
+
+    # Initialize the random values of the model parameters
+    function init_params() -> None
+        function weights_init(m) -> None
+            initializeLayerWeights(m)
+        initializeRandomEmbedding(user_embedding)
+        initializeRandomEmbedding(item_embedding)
+        MLP.apply(weights_init)
+
+    # Forward pass of the model
+    function forward(self, user_id, item_id) -> float
+        user_features = user_embedding(user_id)
+        item_features = item_embedding(item_id)
+        x = concatFeatures(user_features, item_features)
+        x = MLP(x)
+        return x * norm_range + norm_min
+
+    # Training the model
+    function trainingModel(learning_rate, weight_decay, max_epochs, early_stop_epoch_threshold, batch_size) -> None
+        train()
+
+        no_loss_reduction_epoch_counter = 0
+        min_loss = inf
+
+        beta = 0.25
+        loss_criterion = HuberLoss(beta)
+        optimizer = Adam(parameters, learning_rate, weight_decay)
+
+        for epoch in range(max_epochs):
+            epoch_loss = 0.0
+            
+            for x_batch, y_batch in DatasetBatchIterator(rating_x, rating_y, batch_size, shuffle=True)
+                optimizer.zero_grad()
+                outputs = forward(x_batch[:,0], x_batch[:,1])
+                loss = loss_criterion(outputs, y_batch)
+                loss.backward()
+                optimizer.step()
+
+                epoch_loss += loss.item()
+            if epoch_loss < min_loss
+                min_loss = epoch_loss
+                no_loss_reduction_epoch_counter = 0
+            else:
+                no_loss_reduction_epoch_counter += 1
+            if no_loss_reduction_epoch_counter >= early_stop_epoch_threshold
+                break
+    
+    # Evaluate the model
+    function evaluateModel(ratings_val, batch_size)
+        eval()
+        ratings_val_x, ratings_val_y = divideRating(ratings_val)
+        ground_truth, predictions = [], []
+        for x_batch, y_batch in DatasetBatchIterator(ratings_val_x, ratings_val_y, batch_size, shuffle=False)
+            outputs = forward(x_batch[:,0], x_batch[:,1])
+            predictions.extend(outputs.tolist())
+            groud_truth.extend(y_batch.tolist())
+        return computeRMSE(ground_truth, predictions)
+
+    # Predict the rating of a movie for a user
+    function predictRatingUnseenMovies(userId) -> list
+        recommendations = []
+        unseenMovies = findUnseenMoviesByUser(userId)
+        for each unseenMovie in unseenMovies
+            movieIdx = findIdx(unseenMovie)
+            rating = predictRatingMovie(userId, movieIdx)
+            recommendations.append(rating)
+        sort(recommendations)
+        return recommendations
+
+    # Comparision between prediction items and real rated items
+    function validation(ratings_val, user) -> float
+        matrixGenres, validationMoviesGenres = getMatrixGenresAndValidationGenres(movies, ratings_val, user)
+        recommendsMoviesGenres = getRecommedMoviesGenres(recommendations[:topK], matrixGenres)
+        similarity = cosineSimilarity(validationMoviesGenres, recommendsMoviesGenres)  
+        return similarity

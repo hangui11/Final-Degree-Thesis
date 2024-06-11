@@ -1,0 +1,77 @@
+Class MatrixFactorizationRecommender
+    # Initialize the necessary parameters 
+    function initialize(ratings_train, users, movies, k=5, featureSize=8) -> None
+        self.ratings_train = ratings_train
+        self.users = users
+        self.movies = movies
+        self.topK = k
+        self.featureSize = featureSize
+
+    # Create an user-item matrix, M[user][item]
+    function generate_users_items_matrix() -> array
+        m = createEmptyMatrix(len(users), len(movies))
+        for each user in users
+            ratingsMoviesUser = getRatingUser(ratings_train, user)
+            for each movie, rating in ratingsMoviesUser
+                idx = findIndexMovie(movie, movies)
+                m[user][idx] = rating
+        return m
+
+    # Comparision between prediction items and real rated items
+    function validation(ratings_val, user) -> float
+        matrixGenres, validationMoviesGenres = getMatrixGenresAndValidationGenres(movies, ratings_val, user)
+        recommendMoviesGenres = getRecommendMoviesGenres(recommendations[:topK], matrixGenres)
+        similarity = cosineSimilarity(validationMoviesGenres, recommendMoviesGenres)
+        return similarity
+
+    # Generate the new prediction matrix using two matrixs, one of user and the other of item
+    function matrix_factorization(iterations=10000, alpha=0.0002, beta=0.2, momentum=0.9) -> array
+        R = generate_users_items_matrix()
+        row, column = len(R)
+        K = featureSize
+
+        P = randomMatrix(row, K)
+        Q = randomMatrix(K, column)
+        velocityP = matrixOfZeros(row, K)
+        velocityQ = matrixOfZeros(K, column)
+
+        loss_previous = inf
+        for each iteration in iterations
+            e = R - dotProduct(P,Q)
+
+            # Compute the SGD with momentum
+            # Compute the gradient
+            gradientP = 2 * dotProduct(e, transpose(Q)) - beta * P
+            gradientQ = 2 * dotProduct(transpose(P), e) - beta * Q
+
+            gradientP = normalize(gradientP)
+            gradientQ = normalize(gradientQ)
+
+            velocityP = velocityP * momentum + alpha * gradientP
+            velocityQ = velocityQ * momentum + alpha * gradientQ
+
+            P += velocityP
+            Q += velocityQ
+
+            # Use MSE loss function with L2 regularization
+            loss = MSELossFunction(e, beta, P, Q)
+            if loss < 0.001 or abs(loss_previous-loss) < 0.001
+                break
+            else
+                loss_previous = loss
+        
+        self.P = P
+        self.Q = Q
+        self.R = dotProduct(P, Q)
+        return self.R
+
+    # Get recommendations for an user
+    function getRecommendations(userIdx) -> list
+        recommendations = []
+        predictUserRating = getUserPredictRatings(R, userIdx)
+        unseenMovies = getUnseenmoviesForUser(movies, rating, userIdx)
+        for each unseenMovie in unseenMovies
+            idx = findIndexMovie(unseenMovie)
+            recommendations.append(predictUserRating[idx])
+        recommendations = sort(recommendations)
+        return recommendations

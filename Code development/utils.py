@@ -24,7 +24,7 @@ def load_dataset_from_source(path_to_ml_latest_small: str) -> dict:
               - 'links.csv': Movie links data          
     """
     contents = os.listdir(path_to_ml_latest_small)
-    expected_content = ['README.txt', 'ratings.csv', 'tags.csv', 
+    expected_content = ['README.md', 'ratings.csv', 'tags.csv', 
                         'movies.csv', 'links.csv', 'ratingsSmall.csv', 'ratingsSmall_Small.csv']
     if set(contents) ==  set(expected_content): 
         dataset = {}

@@ -1,0 +1,13 @@
+function Main()
+    ratings, movies = loadDataset(dataset_path)
+    users = getUniqueUsers(ratings)
+    ratings_train, ratings_val = splitUsers(ratings)
+    model = Model(ratings_train, movies)
+    model.compute()
+
+    modelSim = []
+    for each user in users
+        sim = model.validation(ratings_val, user)
+        modelSim.append(sim)
+    modelSimCSV = convertCSVFile(modelSim)
+    saveModel(modelSimCSV, CSV_path)

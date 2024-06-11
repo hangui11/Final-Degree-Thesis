@@ -10,6 +10,8 @@ The following scripts will generate the differents graphs for the results obtain
 
 - **`ncf_evaluation.py`**: This script will generate the graphs for the results obtained of differents configurations of parameters of the Neural Collaborative Filtering model. And compare them to obtain the best configuration for the model.
 
+- **pseudocodeEvaluation.txt**: This script contains the pseudocode of the evaluation process.
+
 To execute the scripts, you can use the following command:
 
 ```

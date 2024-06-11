@@ -1,0 +1,22 @@
+Class KNearestNeighborRecommender
+    # Initialize the necessary parameters 
+    function initialize(movies, k=5) -> None
+        self.movies = movies
+        self.topK = k
+
+    # Comparision between prediction items and real rated items
+    function validation(ratings_val, user) -> float
+        matrixGenres, validationMoviesGenres = getMatrixGenresAndValidationGenres(movies, ratings_val, user)
+        recommendMoviesGenres = getRecommendMoviesGenres(recommendations[:topK], matrixGenres)
+        similarity = cosineSimilarity(validationMoviesGenres, recommendMoviesGenres)
+        return similarity
+
+    # Merge user and item recommendations to obtain a new recommendations
+    function mergeRecommendations(userRecommendations, itemRecommedantions) -> list
+        recommendations = []
+        commonMovies = findCommonMovies(userRecommendations, itemRecommedantions)
+        for each commonMovie in commonMovies
+            recommendation = combinationMetric(userRecommendations[commonMovie], itemRecommedantions[commonMovie])
+            recommendations.append(recommendations)
+        recommendations = sort(recommendations)
+        return recommendations
