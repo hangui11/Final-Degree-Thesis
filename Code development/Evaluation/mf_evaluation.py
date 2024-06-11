@@ -8,7 +8,7 @@ code_development_dir = os.path.dirname(current_dir)
 mf_dir = os.path.join(code_development_dir, "Experimentation/Matrix_factorization_experimentation")
 
 '''
-Load the different versions of the mf model from CSV files
+Load the different configurations of the mf model from CSV files
 '''
 def read_csv(path):
     df = pd.read_csv(path)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     # Get the number of users
     users = len(mfSim1)
     
-     # For each version, count the number of users that have the highest similarity compared to the others versions
+     # For each configuration, count the number of users that have the highest similarity compared to the others configurations
     mfCount1, mfCount2, mfCount3, mfCount4, mfCount5, mfCount6 = 0, 0, 0, 0, 0, 0, 
     for i in range(users):
         maxSim = max(mf1[i], mf2[i], mf3[i], mf4[i])
@@ -53,9 +53,9 @@ if __name__ == "__main__":
         if maxSim == mf5[i]: mfCount5 += 1
         if maxSim == mf6[i]: mfCount6 += 1
 
-    version = ['config1', 'config2', 'config3', 'config4', 'config5', 'config6']
-    versionSim = [mfCount1, mfCount2, mfCount3, mfCount4, mfCount5, mfCount6]
-    plt.bar(version, versionSim)
+    configuration = ['config1', 'config2', 'config3', 'config4', 'config5', 'config6']
+    configurationSim = [mfCount1, mfCount2, mfCount3, mfCount4, mfCount5, mfCount6]
+    plt.bar(configuration, configurationSim)
     plt.xlabel('CONFIGURATIONS')
     plt.ylabel('NUMBER OF USERS')
     plt.title('NUMBER OF USERS WITH DIFFERENT CONFIGURATIONS')
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     mfUsersSim5 = mfSim5.loc[mfSim5['userId'].isin(randomUsers)]['mfSim'].values.tolist()
     mfUsersSim6 = mfSim6.loc[mfSim6['userId'].isin(randomUsers)]['mfSim'].values.tolist()
 
-    # Plot the similarities of different versions for the random users
+    # Plot the similarities of different configurations for the random users
     plt.figure(figsize=(12,8))
     plt.bar(X_axis-0.3, mfUsersSim1, width/6, label='config1')
     plt.bar(X_axis-0.2, mfUsersSim2, width/6, label='config2')

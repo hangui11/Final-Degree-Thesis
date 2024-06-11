@@ -1,6 +1,5 @@
 Execution time of models
 ------------------------
-
 Trivial based recommender: 1240.41 seconds
 User based recommender: 4110.48 seconds
 Item based recommender: 13462.84 seconds

@@ -8,7 +8,7 @@ code_development_dir = os.path.dirname(current_dir)
 ncf_dir = os.path.join(code_development_dir, "Experimentation/Neuronal_colaborative_filter_experimentation")
 
 '''
-Load the different versions of the ncf model from CSV files
+Load the different configurations of the ncf model from CSV files
 '''
 def read_csv(path):
     df = pd.read_csv(path)
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # Set the random seed for reproducibility
     np.random.seed(8)
 
-    # Load the different versions of the ncf model
+    # Load the different configurations of the ncf model
     ncfPath = ncf_dir + '/ncfSim_v'
 
     ncfSim1 = pd.read_csv(ncfPath+'1.csv')
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     # Get the number of users
     users = len(ncfSim1)
 
-    # For each version, count the number of users that have the highest similarity compared to the others versions
+    # For each configuration, count the number of users that have the highest similarity compared to the others configurations
     ncfCount1, ncfCount2, ncfCount3, ncfCount4, ncfCount5, ncfCount6 = 0, 0, 0, 0, 0, 0
     for i in range(users):
         maxSim = max(ncf1[i], ncf2[i], ncf3[i], ncf4[i], ncf5[i], ncf6[i])
@@ -52,9 +52,9 @@ if __name__ == "__main__":
         if (ncf4[i] == maxSim): ncfCount4 += 1
         if (ncf5[i] == maxSim): ncfCount5 += 1
         if (ncf6[i] == maxSim): ncfCount6 += 1
-    version = ['config1', 'config2', 'config3', 'config4', 'config5', 'config6']
-    versionSim = [ncfCount1, ncfCount2, ncfCount3, ncfCount4, ncfCount5, ncfCount6]
-    plt.bar(version, versionSim)
+    configuration = ['config1', 'config2', 'config3', 'config4', 'config5', 'config6']
+    configurationSim = [ncfCount1, ncfCount2, ncfCount3, ncfCount4, ncfCount5, ncfCount6]
+    plt.bar(configuration, configurationSim)
     plt.xlabel('CONFIGURATIONS')
     plt.ylabel('NUMBER OF USERS')
     plt.title('NUMBER OF USERS WITH DIFFERENT CONFIGURATIONS')
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     ncfUsersSim5 = ncfSim5.loc[ncfSim5['userId'].isin(randomUsers)]['ncfSim'].values.tolist()
     ncfUsersSim6 = ncfSim6.loc[ncfSim6['userId'].isin(randomUsers)]['ncfSim'].values.tolist()
 
-    # Plot the similarities of different versions for the random users
+    # Plot the similarities of different configurations for the random users
     plt.figure(figsize=(12,8))
     plt.bar(X_axis-0.3, ncfUsersSim1, width/7, label='config1')
     plt.bar(X_axis-0.2, ncfUsersSim2, width/7, label='config2')
@@ -92,13 +92,13 @@ if __name__ == "__main__":
     plt.ylabel('SIMILARITY')
     plt.savefig('../Images/ncf_random_users.png', dpi=100)
 
-    # Plot the accuracy for each version, which the accuracies is obtained from RMSE algorithm
-    accuracyPath = ncf_dir + "/versionAccuracy.csv"
+    # Plot the accuracy for each configuration, which the accuracies is obtained from RMSE algorithm
+    accuracyPath = ncf_dir + "/configurationAccuracy.csv"
     accuracy = pd.read_csv(accuracyPath)
     accuracy = accuracy['accuracy'].values.tolist()
     plt.figure()
     plt.cla()
-    plt.bar(version, accuracy)
+    plt.bar(configuration, accuracy)
     plt.xlabel('CONFIGURATIONS')
     plt.ylabel('ACCURACY')
     plt.title('ACCURACY FOR DIFFERENT CONFIGURATIONS')

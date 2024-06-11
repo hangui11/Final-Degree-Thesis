@@ -7,6 +7,8 @@ This section contains the following files and scripts:
 
 - **Evaluation**: This file contains the evaluation metrics used to evaluate the accuracy of the recommender system models.
 
+- **Experimentation**: This file contains the different experiments performed to obtain the results of the recommender system models.
+
 - **Images**: This file contains the images obtained from evaluation metrics, where have the accuracy of diferents algorithms.
 
 - **Methods version**: This file contains the methods version of the recommender system models.

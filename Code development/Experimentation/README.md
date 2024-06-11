@@ -8,9 +8,9 @@ The following files contains the experimetion scripts and the CSV files with the
 
 - **kNN_hybrid_experimentation**: The file contains the experimentation for the kNN-based hybrid model and the results are stored in the CSV files.
 
-- **Matrix_factorization_experimentation**: The file contains the experiments for the matrix factorization model and the results are stored in the CSV files. Also contains the results of differents versions of the matrix factorization model.
+- **Matrix_factorization_experimentation**: The file contains the experiments for the matrix factorization model and the results are stored in the CSV files. Also contains the results of differents configurations of the matrix factorization model.
 
-- **Neuronal_colaborative_filter_experimentation**: The file contains the experiments for the neural collaborative filtering model and the results are stored in the CSV files. Also contains the RMSE accuracy results and thre results of differents versions of the neural collaborative filtering model.
+- **Neuronal_colaborative_filter_experimentation**: The file contains the experiments for the neural collaborative filtering model and the results are stored in the CSV files. Also contains the RMSE accuracy results and thre results of differents configurations of the neural collaborative filtering model.
 
 - **Trivial_experimentation**: The file contains the experiments for the trivial model and the results are stored in the CSV files.
 
