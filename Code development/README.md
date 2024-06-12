@@ -11,7 +11,7 @@ This section contains the following files and scripts:
 
 - **Images**: This file contains the images obtained from evaluation metrics, where have the accuracy of diferents algorithms.
 
-- **Methods version**: This file contains the methods version of the recommender system models.
+- **Methods version**: This file contains the methods version of the recommender system models. Also its an old version of the algorithms, which are not used in the final version of the recommender system models.
 
 - **`createSmallDataset.py`**: This script creates a small dataset from the original dataset, which is used to test the recommender system models.
 
