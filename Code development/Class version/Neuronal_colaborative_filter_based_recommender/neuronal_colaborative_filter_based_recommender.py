@@ -57,14 +57,16 @@ class NeuronalColaborativeFilter(nn.Module):
         super().__init__()
         self.movies = movies
         self.ratings = ratings_train
+        
         # Split ratings train into x and y, where x is the user-item interaction matrix and y is the rating matrix
         self.ratings_x = ratings_train[['userId', 'movieId']]
-        users = sorted(list(set(ratings_train["userId"].values)))
-        self.ratings_x.loc[:,'userId'] = self.findIdxUser(self.ratings_x['userId'].values.tolist(), users)
-        movies_idx = self.findIdx(self.ratings_x['movieId'].values.tolist())
-        self.ratings_x.loc[:,'movieId'] = movies_idx
+        self.ratings_x = self.ratings_x.drop_duplicates(subset=['userId', 'movieId'])
         self.ratings_y = ratings_train['rating'].astype(np.float32)
         
+        # Create dictionary of user and item to get the index of the user and item in the dataset
+        self.users_idx = {v: i for i, v in enumerate(pd.unique(self.ratings_x['userId']))}
+        self.items_idx = {v: i for i, v in enumerate(pd.unique(self.ratings_x['movieId']))}
+
         # Store the number of the top recommendations to be generated
         self.topK = k
 
@@ -75,9 +77,13 @@ class NeuronalColaborativeFilter(nn.Module):
         self.user_hash_size = user_count
         self.item_hash_size = item_count
 
-        ## Initialize the model architecture components
-        self.user_embedding = nn.Embedding(user_count, embedding_size)
-        self.item_embedding = nn.Embedding(item_count, embedding_size)
+        ## Initialize the model architecture components, Embedding Matrix must have unique elements (categorical variable)
+        self.user_embedding = nn.Embedding(user_count + 1, embedding_size)
+        self.item_embedding = nn.Embedding(item_count + 1, embedding_size)
+
+        # Default embeddings for unseen users/items
+        self.default_user_embedding = torch.zeros(embedding_size, device=self.device)
+        self.default_item_embedding = torch.zeros(embedding_size, device=self.device)
 
         ## Generate a MLP
         self.MLP = self.__genMLP(embedding_size, hidden_layers, dropout_rate)
@@ -101,6 +107,8 @@ class NeuronalColaborativeFilter(nn.Module):
         assert (embedding_size * 2) == hidden_layers_units[0], "First input layers number units must be the twice time of embedding size"
 
         hidden_layers = []
+        # The case that have numerical and categorical variables:
+        # input_units = embedding_size*2 + num_numerical_features
         input_units = hidden_layers_units[0]
 
         # Construct the connection between layers
@@ -155,51 +163,52 @@ class NeuronalColaborativeFilter(nn.Module):
     given the input user_id and item_id
     The function will be auto invoked by PyTorch when we call the model.
     '''
-    def forward(self, user_id, item_id):
-        ## Access the features of user_id and item_id
-        user_features = self.user_embedding(user_id)
-        item_features = self.item_embedding(item_id)
+    def forward(self, user_id_tensor, item_id_tensor):
+        # Convert user_id_tensor and item_id_tensor to lists
+        user_ids = user_id_tensor.tolist()  # Convert tensor to list
+        item_ids = item_id_tensor.tolist()  # Convert tensor to list
         
+        # Use the lists to get the corresponding indices from the dictionaries
+        user_idx = [self.users_idx.get(user_id, self.user_hash_size) for user_id in user_ids]  # Check for missing users
+        item_idx = [self.items_idx.get(item_id, self.item_hash_size) for item_id in item_ids]  # Check for missing items
+
+        # Convert the indices back to tensors
+        user_idx = torch.tensor(user_idx, dtype=torch.long, device=self.device) #
+        item_idx = torch.tensor(item_idx, dtype=torch.long, device=self.device)
+
+        ## Access the features of user_id and item_id
+        user_features = self.user_embedding(user_idx)
+        item_features = self.item_embedding(item_idx)
+        
+        # Handle unseen users/items (optional)
+        # If a user or item is unseen, assign default embedding
+        unseen_user_mask = user_idx == self.user_hash_size
+        unseen_item_mask = item_idx == self.item_hash_size
+        
+        user_features[unseen_user_mask] = self.default_user_embedding
+        item_features[unseen_item_mask] = self.default_item_embedding
+
+
+        # In the case that have numerical and categorical features
+        # Concatenate the features of user and item in one feature representation
+        # x = torch.cat([user_features, item_features, numerical_features], dim=1)
+        # if hasattr(self, 'dropout'):
+        #     x = self.dropout(x)
+    
+
         ## Concat the features of user and item in one feature representation
         x = torch.cat([user_features, item_features], dim=1)
         if hasattr(self, 'dropout'):
             x = self.dropout(x)
         
         ## The feature will be compute with neuronal network 
-        x = self.MLP(x)
+        y = self.MLP(x)
 
         ## Normalize the output between 1 and 5
-        normalized_output = x * self.norm_range + self.norm_min
+        normalized_output = y * self.norm_range + self.norm_min
         return normalized_output
 
-    '''
-    This function find the index of the movieId in the movies list
-    '''
-    def findIdx(self, movie_ids):
-        idx = []
-        listMovies = self.movies['movieId'].values.tolist()
-        for movie_id in movie_ids:
-            if movie_id in listMovies:
-                idx.append(listMovies.index(movie_id))
-            else:
-                print("Error: movie_id not found")
-                break
-        return idx
-    
-    '''
-    This method fint the index of the userId in the users list
-    '''
-    def findIdxUser(self, user_ids, users):
-        idx = []
-        for user_id in user_ids:
-            if user_id in users:
-                idx.append(users.index(user_id))
-            else:
-                print("Error: user_id not found")
-                break
-        return idx
 
-    
     '''
     The training function of the model, which will update the parameters of the model using
     the Huber loss function and the Adam optimizer
@@ -260,27 +269,27 @@ class NeuronalColaborativeFilter(nn.Module):
     The evaluation function of the model, which will compute the RMSE error of the model
     given the validation dataset
     '''
-    def evaluateModel(self, ratings_val, batch_size, users):
+    def evaluateModel(self, ratings_val, batch_size):
         self.eval()
+
         # Split ratings validation dataset into x and y, where x is the user-item interaction matrix and y is the rating matrix
         ratings_val_x = ratings_val[['userId', 'movieId']]
-        ratings_val_x.loc[:,'userId'] = self.findIdxUser(ratings_val_x['userId'].values.tolist(), users)
-        movies_idx = self.findIdx(ratings_val_x['movieId'].values.tolist())
-        ratings_val_x.loc[:,'movieId'] = movies_idx
+        ratings_val_x = ratings_val_x.drop_duplicates(subset=['userId', 'movieId'])
         ratings_val_y = ratings_val[['rating']]
-        groud_truth, predictions = [], []
+
+        ground_truth, predictions = [], []
 
         with torch.no_grad():
             for x_batch, y_batch in DatasetBatchIterator(ratings_val_x, ratings_val_y, batch_size=batch_size, shuffle=False):
                 x_batch, y_batch = x_batch.to(device=self.device), y_batch.to(device=self.device)
                 # Get predictions from the model
                 outputs = self(x_batch[:, 0], x_batch[:, 1])
-                groud_truth.extend(y_batch.tolist())
+                ground_truth.extend(y_batch.tolist())
                 predictions.extend(outputs.tolist())
-        groud_truth = np.array(groud_truth).ravel()
+        ground_truth = np.array(ground_truth).ravel()
         predictions = np.array(predictions).ravel()
         # Using RMSE algorithm to evaluate the model's accuracy
-        RMSE = np.sqrt(mean_squared_error(groud_truth, predictions))
+        RMSE = np.sqrt(mean_squared_error(ground_truth, predictions))
         print(f'RMSE: {RMSE}')
 
     '''
@@ -288,9 +297,8 @@ class NeuronalColaborativeFilter(nn.Module):
     '''
     def predictRatingMovie(self, user_id, movie_id):
         self.eval()
-        device = next(self.parameters()).device
-        user_id_tensor = torch.tensor([user_id], dtype=torch.long, device=device)
-        movie_id_tensor = torch.tensor([movie_id], dtype=torch.long, device=device)
+        user_id_tensor = torch.tensor([user_id], dtype=torch.long, device=self.device)
+        movie_id_tensor = torch.tensor([movie_id], dtype=torch.long, device=self.device)
         with torch.no_grad():
             rating = self(user_id_tensor, movie_id_tensor)
         return rating.item()
@@ -310,13 +318,11 @@ class NeuronalColaborativeFilter(nn.Module):
     '''
     The function that predit the recommendations of unseen movies for an user
     '''
-    def predictUnseenMoviesRating(self, userId, users):
+    def predictUnseenMoviesRating(self, userId):
         recommendations = []
         unseenMovies = self.findUnseenMoviesByUser(userId)
         for unseenMovie in unseenMovies:
-            movieIdx = self.findIdx([unseenMovie])[0]
-            userIdx = self.findIdxUser([userId], users)[0]
-            rating = self.predictRatingMovie(userIdx, movieIdx)
+            rating = self.predictRatingMovie(userId, unseenMovie)
             recommendations.append((unseenMovie, rating))
         # Sort the recommendations by rating in descending order
         recommendations = sorted(recommendations, key=lambda x:x[1], reverse=True)
@@ -369,7 +375,7 @@ if __name__ == "__main__":
     target_user_idx = 1
     print('The prediction for user ' + str(target_user_idx) + ':')
 
-    ncf = NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, dataset['movies.csv'])
+    ncf = NeuronalColaborativeFilter(len(set(users_idy)), len(set(movies_idx)), ratings_train, dataset['movies.csv'])
 
     ## Hyper parameters
     lr = 1e-3   # Learning rate to update the model parameters
@@ -384,10 +390,11 @@ if __name__ == "__main__":
 
     ncf.trainingModel(lr, wd, max_epochs, early_stop_epoch_threshold, batch_size)
     # ncf.evaluateModel(ratings_train, batch_size)
-    ncf.evaluateModel(ratings_val, batch_size, users_idy)
+    ncf.evaluateModel(ratings_val, batch_size)
     recommendations = ncf.predictUnseenMoviesRating(target_user_idx)
     ncf.printTopRecommendations()
     ncf.validation(ratings_val, target_user_idx)
     
     end = time.time()
     print("The execution time: " + str(end-start) + " seconds")
+

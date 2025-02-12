@@ -87,7 +87,7 @@ def matrix_genres(movies: object) -> dict:
                           columns=list(unique_genres), index=list(dict_movies.keys()))
     
     for idx_movie, genres in dict_movies.items():
-        for genre in genres: matrix.loc[idx_movie][genre] = 1
+        for genre in genres: matrix.loc[idx_movie, genre] = 1
      
     return matrix
 

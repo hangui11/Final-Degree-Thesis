@@ -37,11 +37,11 @@ if __name__ == "__main__":
     np.random.seed(seed)
 
     # Create the neuronal colaborative filter based recommender model
-    ncfRecommender = ncf.NeuronalColaborativeFilter(len(users_idy), len(movies_idx), ratings_train, movies)
+    ncfRecommender = ncf.NeuronalColaborativeFilter(len(set(users_idy)), len(set(movies_idx)), ratings_train, movies)
     # Train the model
     ncfRecommender.trainingModel(lr=1e-3, wd=1e-4, max_epochs = 50, batch_size = 64,  early_stop_epoch_threshold = 5)
     # Evaluate the model
-    ncfRecommender.evaluateModel(ratings_val, batch_size = 64, users = users_idy)
+    ncfRecommender.evaluateModel(ratings_val, batch_size = 64)
     end = time.time()
     print('NCF MODEL Computation time: ' + str(end-start))
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     # Make the prediction of the neuronal collaborative filtering based recommender for each user in the validation set
     for userId in users_idy:
-        ncfRecommender.predictUnseenMoviesRating(userId, users_idy)
+        ncfRecommender.predictUnseenMoviesRating(userId)
         sim = ncfRecommender.validation(ratings_val, userId)
         countSim += sim
         ncfSim.append((userId, sim))
